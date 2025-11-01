@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.myapplication.presentation.home.HomeFragment"
+        android:label="Home"/>
+
+    <fragment
+        android:id="@+id/groupFragment"
+        android:name="com.example.myapplication.presentation.group.GroupFragment"
+        android:label="Search"/>
+
+    <fragment
+        android:id="@+id/calendarFragment"
+        android:name="com.example.myapplication.presentation.calendar.CalendarFragment"
+        android:label="My Page"/>
+
+</navigation>

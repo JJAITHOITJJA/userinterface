@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">Booki on</string>
+    <string name="home">홈</string>
+    <string name="group">그룹</string>
+    <string name="calendar">기록</string>
+
+
 </resources>
