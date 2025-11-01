@@ -20,5 +20,6 @@
 
     <color name="font_main">#FF000000</color>
     <color name="font_sub">#8F8F8F</color>
+    <color name="deep_gray">#8C8C8C</color>
     <color name="assu_box">#F4F4F5</color>
 </resources>
