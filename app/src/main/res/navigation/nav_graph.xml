@@ -12,11 +12,21 @@
     <fragment
         android:id="@+id/groupFragment"
         android:name="com.example.myapplication.presentation.group.GroupFragment"
-        android:label="Search"/>
+        android:label="my group">
+        <action
+            android:id="@+id/action_groupFragment_to_groupSearchFragment"
+            app:destination="@id/groupSearchFragment"/>
+    </fragment>
 
     <fragment
         android:id="@+id/calendarFragment"
         android:name="com.example.myapplication.presentation.calendar.CalendarFragment"
         android:label="My Page"/>
+
+
+    <fragment
+        android:id="@+id/groupSearchFragment"
+        android:name="com.example.myapplication.presentation.group.GroupSearchFragment"
+        android:label="group search"/>
 
 </navigation>

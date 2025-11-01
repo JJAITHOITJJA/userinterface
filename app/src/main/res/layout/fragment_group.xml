@@ -2,12 +2,61 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tool="http://schemas.android.com/tools">
     <TextView
+        android:id="@+id/tv_mygroup"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="group"/>
+        android:layout_marginTop="22dp"
+        android:layout_marginStart="21dp"
+        android:text="나의 그룹"
+        android:includeFontPadding="false"
+        android:textSize="20sp"
+        android:textColor="@color/font_main"
+        android:fontFamily="@font/pretendard_bold"/>
+
+
+    <TextView
+        android:id="@+id/tv_group_explain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/tv_mygroup"
+        app:layout_constraintStart_toStartOf="parent"
+        android:textSize="12sp"
+        android:includeFontPadding="false"
+        android:layout_marginStart="21dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/pretendard_regular"
+        android:text="함께할 그룹을 생성하고 만들어보세요!"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_mygroup_list"
+        android:layout_marginTop="6dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tool:listitem="@layout/item_group"
+        app:layout_constraintTop_toBottomOf="@id/tv_group_explain"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="11dp"
+        android:backgroundTint="@color/g7"
+        android:src="@drawable/ic_add"
+        app:tint="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:elevation="6dp"
+        app:pressedTranslationZ="12dp"
+        />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
