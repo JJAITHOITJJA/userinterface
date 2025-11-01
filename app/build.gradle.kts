@@ -58,4 +58,6 @@ dependencies {
     implementation(libs.hilt.android)
     annotationProcessor(libs.hilt.compiler)
     implementation(libs.hilt.navigation.fragment)
+
+    implementation("de.hdodenhof:circleimageview:3.1.0")
 }
