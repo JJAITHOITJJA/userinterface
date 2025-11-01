@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tool="http://schemas.android.com/tools">
+
+    <TextView
+        android:id="@+id/tv_search_group_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="22dp"
+        android:layout_marginStart="21dp"
+        android:text="그룹 찾기"
+        android:includeFontPadding="false"
+        android:textSize="20sp"
+        android:textColor="@color/font_main"
+        android:fontFamily="@font/pretendard_bold"/>
+
+
+    <ImageView
+        android:id="@+id/iv_group_search_box"
+        android:layout_width= "0dp"
+        android:layout_height="38dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginHorizontal="18dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/bg_search_box"
+        app:layout_constraintTop_toBottomOf="@id/tv_search_group_title"/>
+
+    <ImageView
+        android:id="@+id/iv_search_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_search"
+        app:layout_constraintTop_toTopOf="@id/iv_group_search_box"
+        app:layout_constraintBottom_toBottomOf="@id/iv_group_search_box"
+        app:layout_constraintStart_toStartOf="@id/iv_group_search_box"
+        android:layout_marginStart="11dp"/>
+    
+    <EditText
+        android:layout_width="271dp"
+        android:layout_height="wrap_content"
+        android:textSize="13sp"
+        android:layout_marginStart="5dp"
+        android:hint="그룹 이름을 검색해주세요"
+        android:background="@null"
+        app:layout_constraintStart_toEndOf="@id/iv_search_icon"
+        app:layout_constraintTop_toTopOf="@id/iv_search_icon"
+        app:layout_constraintBottom_toBottomOf="@id/iv_search_icon"
+        android:maxLines="1"/>
+
+    <CheckBox
+        android:id="@+id/cb_search_literature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@android:color/transparent"
+        android:button="@drawable/category_check_selector"
+        android:paddingStart="8dp"
+        android:fontFamily="@font/pretendard_semibold"
+        android:text="문학"
+        android:textColor="@color/deep_gray"
+        android:textSize="13sp"
+        app:layout_constraintStart_toStartOf="@id/iv_search_icon"
+        app:layout_constraintTop_toBottomOf="@id/iv_group_search_box" />
+
+    <CheckBox
+        android:id="@+id/cb_search_nonliterature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@android:color/transparent"
+        android:button="@drawable/category_check_selector"
+        android:paddingStart="8dp"
+        android:layout_marginStart="20dp"
+        android:fontFamily="@font/pretendard_semibold"
+        android:text="비문학"
+        android:textColor="@color/deep_gray"
+        android:textSize="13sp"
+        app:layout_constraintStart_toEndOf="@id/cb_search_literature"
+        app:layout_constraintTop_toBottomOf="@id/iv_group_search_box" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_search_list"
+        android:layout_marginTop="6dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tool:listitem="@layout/item_group"
+        app:layout_constraintTop_toBottomOf="@id/cb_search_literature"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_group_create"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="11dp"
+        android:backgroundTint="@color/g7"
+        android:src="@drawable/ic_add"
+        app:tint="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:elevation="6dp"
+        app:pressedTranslationZ="12dp"
+        />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
