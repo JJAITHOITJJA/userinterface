@@ -11,13 +11,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
-import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
 import com.example.myapplication.data.group.GroupItem;
 
-// 1. GroupItem을 위한 DiffUtil.ItemCallback 정의
+
 public class GroupAdapter extends ListAdapter<GroupItem, GroupAdapter.GroupViewHolder> {
 
     public GroupAdapter() {
@@ -30,7 +29,6 @@ public class GroupAdapter extends ListAdapter<GroupItem, GroupAdapter.GroupViewH
             return oldItem.getName().equals(newItem.getName());
         }
 
-        // 아이템의 내용이 동일한지(필드 값 비교) 확인
         @SuppressLint("DiffUtilEquals")
         @Override
         public boolean areContentsTheSame(@NonNull GroupItem oldItem, @NonNull GroupItem newItem) {
@@ -38,7 +36,6 @@ public class GroupAdapter extends ListAdapter<GroupItem, GroupAdapter.GroupViewH
         }
     }
 
-    // --- ViewHolder 구현 ---
     public static class GroupViewHolder extends RecyclerView.ViewHolder {
         private final ImageView thumbnail;
         private final TextView name;

@@ -24,7 +24,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="그룹 이름~"
-        android:layout_marginTop="9dp"
         android:fontFamily="@font/pretendard_semibold"
         android:textSize="17sp"
         android:textColor="@color/font_main"/>
