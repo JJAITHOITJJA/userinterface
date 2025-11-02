@@ -29,4 +29,9 @@
         android:name="com.example.myapplication.presentation.group.GroupSearchFragment"
         android:label="group search"/>
 
+    <fragment
+        android:id="@+id/onmateSearchFragment"
+        android:name="com.example.myapplication.presentation.group.MateSearchFragment"
+        android:label="onmate search"/>
+
 </navigation>

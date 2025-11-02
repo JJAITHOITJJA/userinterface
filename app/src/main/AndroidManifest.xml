@@ -12,7 +12,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
         <activity
-            android:name="com.example.myapplication.presentation.MainActivity"
+            android:name=".presentation.login.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,7 +24,5 @@
             </intent-filter>
         </activity>
     </application>
-
-
 
 </manifest>
