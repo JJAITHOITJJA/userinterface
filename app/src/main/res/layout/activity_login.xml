@@ -48,6 +48,7 @@
             android:layout_marginTop="10dp"/>
 
         <EditText
+            android:id="@+id/et_email_input"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="이메일 혹은 아이디 입력"
@@ -97,6 +98,7 @@
             app:layout_constraintTop_toBottomOf="@id/iv_password_field_bg"/>
 
         <EditText
+            android:id="@+id/et_password_input"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="비밀번호 입력"
@@ -109,6 +111,7 @@
 
 
         <TextView
+            android:id="@+id/btn_login"
             android:layout_width="0dp"
             android:layout_height="60dp"
             android:text="로그인"

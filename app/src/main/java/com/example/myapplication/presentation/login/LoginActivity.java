@@ -1,9 +1,12 @@
 package com.example.myapplication.presentation.login;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -13,10 +16,19 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.myapplication.R;
 import com.example.myapplication.databinding.ActivityLoginBinding;
+import com.example.myapplication.presentation.MainActivity;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LoginActivity extends AppCompatActivity {
 
     private ActivityLoginBinding binding;
+    private FirebaseAuth auth;
+    private FirebaseFirestore db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,6 +42,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
 
+
         binding.tvLoginSignupBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -41,6 +54,32 @@ public class LoginActivity extends AppCompatActivity {
                 fragmentTransaction.commit();
             }
         });
+
+        binding.btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                handleLogin();
+            }
+        });
+    }
+
+    private void handleLogin(){
+        auth.signInWithEmailAndPassword(binding.etEmailInput.getText().toString(),
+                binding.etPasswordInput.getText().toString()).addOnCompleteListener(
+                this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if(task.isSuccessful()){
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            startActivity(intent);
+                        } else{
+                            Toast.makeText(LoginActivity.this, "로그인 정보 불일치", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                }
+        );
+
     }
 
 
