@@ -10,7 +10,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 
+import com.example.myapplication.data.onmate.AddMateItem;
 import com.example.myapplication.databinding.FragmentGroupCreateBinding;
+
+import java.util.ArrayList;
 
 public class GroupCreateFragment extends Fragment {
     private FragmentGroupCreateBinding binding;
@@ -50,4 +53,14 @@ public class GroupCreateFragment extends Fragment {
         super.onDestroyView();
         binding = null;
     }
+
+    private void initAddMateAdapter(){
+        AddMateAdapter adapter = new AddMateAdapter();
+        adapter.setDeleteMode(false);
+        binding.rvAddedMate.setAdapter(adapter);
+
+
+    }
+
+
 }
