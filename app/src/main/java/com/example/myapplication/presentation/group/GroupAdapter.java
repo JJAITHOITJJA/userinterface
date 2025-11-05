@@ -55,13 +55,13 @@ public class GroupAdapter extends ListAdapter<GroupItem, GroupAdapter.GroupViewH
         }
 
         public void bind(GroupItem item) {
-            thumbnail.setImageResource(item.getThumbnailResId());
+            thumbnail.setImageResource(R.drawable.sayhello); // TODO : 나중에 이미지 연결 완료 후 수정
             name.setText(item.getName());
-            lockIcon.setVisibility(item.isLocked() ? View.VISIBLE : View.GONE);
+            lockIcon.setVisibility(item.getIsLocked() ? View.VISIBLE : View.GONE);
             startDate.setText(item.getStartDate());
             description.setText(item.getDescription());
 
-            if(tag.equals("문학")) tag.setImageResource(R.drawable.tag_literature);
+            if(item.getIsLiterature()) tag.setImageResource(R.drawable.tag_literature);
             else tag.setImageResource(R.drawable.tag_non_literature);
 
         }
