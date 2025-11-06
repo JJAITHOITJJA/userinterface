@@ -18,6 +18,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.myapplication.R;
+import com.example.myapplication.data.OnItemClickListener;
 import com.example.myapplication.data.group.GroupItem;
 import com.example.myapplication.databinding.FragmentGroupBinding;
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,6 +33,7 @@ import java.util.List;
 public class GroupFragment extends Fragment {
 
     FragmentGroupBinding binding;
+    private NavController navController;
     private FirebaseUser user;
     private FirebaseFirestore db;
     private GroupAdapter adapter;
@@ -57,7 +59,7 @@ public class GroupFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        NavController navController = NavHostFragment.findNavController(this);
+        navController = NavHostFragment.findNavController(this);
 
         initAdapter();
         binding.fabAdd.setOnClickListener(v -> {
@@ -72,7 +74,16 @@ public class GroupFragment extends Fragment {
     }
 
     private void initAdapter(){
-        adapter = new GroupAdapter();
+        adapter = new GroupAdapter(new OnItemClickListener<GroupItem>() {
+            @Override
+            public void onItemClick(GroupItem item, int position) {
+                String groupId = item.getGroupId(); // GroupItem에 getGroupId()가 있다고 가정
+
+                Bundle bundle = new Bundle();
+                bundle.putString("groupId", groupId);
+                navController.navigate(R.id.action_groupFragment_to_groupInsideFragment, bundle);
+            }
+        });
         binding.rvMygroupList.setAdapter(adapter);
         binding.rvMygroupList.setLayoutManager(new LinearLayoutManager(getContext()));
         loadGroupData();
@@ -90,6 +101,7 @@ public class GroupFragment extends Fragment {
                         Log.d("GroupFragment", "Documents fetched: " + task.getResult().size());
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             GroupItem item = document.toObject(GroupItem.class);
+                            item.setGroupId(document.getId());
                             groupList.add(item);
                         }
                         adapter.submitList(groupList);

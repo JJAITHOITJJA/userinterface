@@ -16,6 +16,10 @@
         <action
             android:id="@+id/action_groupFragment_to_groupSearchFragment"
             app:destination="@id/groupSearchFragment"/>
+        <action
+            android:id="@+id/action_groupFragment_to_groupInsideFragment"
+            app:destination="@id/groupInsideFragment"/>
+
     </fragment>
 
     <fragment
@@ -45,5 +49,10 @@
         android:id="@+id/groupBookFragment"
         android:name="com.example.myapplication.presentation.group.GroupBookFragment"
         android:label="그룹 내부 책 토크 화면"/>
+
+    <fragment
+        android:id="@+id/groupInsideFragment"
+        android:name="com.example.myapplication.presentation.group.GroupInsideFragment"
+        android:label="그룹 상세 정보"/>
 
 </navigation>

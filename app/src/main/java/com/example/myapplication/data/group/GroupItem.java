@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 public class GroupItem {
 
+    private String groupId;
     private String thumbnailUrl;
     private String name;
     private boolean isLocked;
@@ -21,7 +22,8 @@ public class GroupItem {
         this.discussionList = new ArrayList<>();
     }
 
-    public GroupItem(String thumbnailUrl, String name, boolean isLocked, String startDate, String description, boolean isLiterature) {
+    public GroupItem(String groupId, String thumbnailUrl, String name, boolean isLocked, String startDate, String description, boolean isLiterature) {
+        this.groupId = groupId;
         this.thumbnailUrl = thumbnailUrl;
         this.name = name;
         this.isLocked = isLocked;
@@ -38,6 +40,14 @@ public class GroupItem {
 
     public void setThumbnailUrl(String thumbnailUrl) {
         this.thumbnailUrl = thumbnailUrl;
+    }
+
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
     }
 
     public String getName() {

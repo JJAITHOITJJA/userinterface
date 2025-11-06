@@ -14,11 +14,18 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
+import com.example.myapplication.data.OnItemClickListener;
 import com.example.myapplication.data.group.GroupItem;
 
 
 public class GroupAdapter extends ListAdapter<GroupItem, GroupAdapter.GroupViewHolder> {
 
+    private OnItemClickListener<GroupItem> listener= null;
+
+    public GroupAdapter(OnItemClickListener<GroupItem> listener) { // 💡 생성자에서 리스너를 받음
+        super(new GroupItemDiffCallback());
+        this.listener = listener;
+    }
     public GroupAdapter() {
         super(new GroupItemDiffCallback());
     }
@@ -64,7 +71,9 @@ public class GroupAdapter extends ListAdapter<GroupItem, GroupAdapter.GroupViewH
             if(item.getIsLiterature()) tag.setImageResource(R.drawable.tag_literature);
             else tag.setImageResource(R.drawable.tag_non_literature);
 
+
         }
+
     }
 
 
@@ -80,5 +89,10 @@ public class GroupAdapter extends ListAdapter<GroupItem, GroupAdapter.GroupViewH
     public void onBindViewHolder(@NonNull GroupViewHolder holder, int position) {
         GroupItem item = getItem(position);
         holder.bind(item);
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null && holder.getAdapterPosition() != RecyclerView.NO_POSITION) {
+                listener.onItemClick(getItem(holder.getAdapterPosition()), holder.getAdapterPosition());
+            }
+        });
     }
 }
