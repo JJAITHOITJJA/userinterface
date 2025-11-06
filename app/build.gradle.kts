@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.hilt.android)
+//    alias(libs.plugins.kotlin.android) // Use for the Android Kotlin plugin
+//    alias(libs.plugins.kotlin.kapt)
 }
 
 android {
@@ -9,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.myapplication"
-        minSdk = 34
+        minSdk = 31
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -55,9 +57,13 @@ dependencies {
     implementation(libs.flexbox)
     implementation(libs.androidx.recyclerview)
 
+    //캘린더
+    implementation("com.github.prolificinteractive:material-calendarview:2.0.1")
+
     // Hilt
     implementation(libs.hilt.android)
     annotationProcessor(libs.hilt.compiler)
+//    kapt(libs.hilt.compiler)
     implementation(libs.hilt.navigation.fragment)
 
     implementation("de.hdodenhof:circleimageview:3.1.0")
