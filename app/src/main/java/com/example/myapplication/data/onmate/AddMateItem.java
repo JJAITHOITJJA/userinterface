@@ -1,14 +1,12 @@
 package com.example.myapplication.data.onmate;
 
-public class MateItem {
+public class AddMateItem {
     private final String name;
-    private final String id;
     private final String uid;
-    private final String profileImageUrl;
+    private final int profileImageUrl;
 
-    public MateItem(String name, String id, String uid, String profileImageUrl) {
+    public AddMateItem(String name, String uid, int profileImageUrl) {
         this.name = name;
-        this.id = id;
         this.uid = uid;
         this.profileImageUrl = profileImageUrl;
     }
@@ -17,14 +15,10 @@ public class MateItem {
         return name;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public String getUId(){
+    public String getUId() {
         return uid;
     }
-    public String getProfileImageUrl() {
+    public int getProfileImageUrl() {
         return profileImageUrl;
     }
 }

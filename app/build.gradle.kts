@@ -1,8 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.hilt.android)
-//    alias(libs.plugins.kotlin.android) // Use for the Android Kotlin plugin
-//    alias(libs.plugins.kotlin.kapt)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -63,8 +62,14 @@ dependencies {
     // Hilt
     implementation(libs.hilt.android)
     annotationProcessor(libs.hilt.compiler)
-//    kapt(libs.hilt.compiler)
     implementation(libs.hilt.navigation.fragment)
 
     implementation("de.hdodenhof:circleimageview:3.1.0")
+
+
+    // 파이어베이스
+    implementation(platform("com.google.firebase:firebase-bom:34.5.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
 }

@@ -5,6 +5,19 @@
     android:layout_height="match_parent"
     xmlns:tool="http://schemas.android.com/tools">
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_added_mate"
+        android:layout_marginTop="20dp"
+        android:layout_marginHorizontal="18dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tool:listitem="@layout/item_add_mate"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:orientation="horizontal"
+        app:reverseLayout="false"
+        app:layout_constraintTop_toBottomOf="@id/tv_search_mate_title"
+        app:layout_constraintStart_toStartOf="parent"/>
+
     <TextView
         android:id="@+id/tv_search_mate_title"
         app:layout_constraintStart_toStartOf="parent"
@@ -24,12 +37,12 @@
         android:id="@+id/iv_mate_search_box"
         android:layout_width= "0dp"
         android:layout_height="43dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="15dp"
         android:layout_marginHorizontal="18dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:background="@drawable/bg_search_box"
-        app:layout_constraintTop_toBottomOf="@id/tv_search_mate_title"/>
+        app:layout_constraintTop_toBottomOf="@id/rv_added_mate"/>
 
     <ImageView
         android:id="@+id/iv_search_icon"
@@ -48,6 +61,20 @@
         android:textSize="13sp"
         android:layout_marginStart="5dp"
         android:hint="온메이트 닉네임 혹은 아이디를 검색해주세요"
+        android:background="@null"
+        app:layout_constraintStart_toEndOf="@id/iv_search_icon"
+        app:layout_constraintTop_toTopOf="@id/iv_search_icon"
+        app:layout_constraintBottom_toBottomOf="@id/iv_search_icon"
+        android:maxLines="1"/>
+
+    <TextView
+        android:id="@+id/tv_onmate_search"
+        android:layout_width="271dp"
+        android:layout_height="wrap_content"
+        android:textSize="13sp"
+        android:layout_marginStart="5dp"
+        android:text=""
+        android:visibility="gone"
         android:background="@null"
         app:layout_constraintStart_toEndOf="@id/iv_search_icon"
         app:layout_constraintTop_toTopOf="@id/iv_search_icon"
