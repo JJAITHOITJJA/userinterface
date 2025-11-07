@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -19,6 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.example.myapplication.R;
 import com.example.myapplication.data.calendar.BookRecord;
 import com.example.myapplication.databinding.FragmentCalendarBinding;
+import com.example.myapplication.presentation.record.BookListFragment;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;
@@ -42,6 +46,9 @@ public class CalendarFragment extends Fragment {
 
     // DotSpan 크기 상수
     private static final int DOT_SPAN_RADIUS = 6;
+    public void onCreate(@Nullable Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+    }
 
     @Nullable
     @Override
