@@ -128,19 +128,19 @@ public class GroupInsideFragment extends Fragment {
             List<AddMateItem> mateList = new ArrayList<>();
             db.collection("users").document(memberIds).get()
                     .addOnCompleteListener(task -> {
-                        if(task.isSuccessful()){
-                            DocumentSnapshot document = task.getResult();
-                            if(document.exists()){
-                                AddMateItem item = new AddMateItem(document.getString("nickname")
-                                        , document.getId()
-                                        , R.drawable.capibara);
-                                mateList.add(item);
+                                if(task.isSuccessful()){
+                                    DocumentSnapshot document = task.getResult();
+                                    if(document.exists()){
+                                        AddMateItem item = new AddMateItem(document.getString("nickname")
+                                                , document.getId()
+                                                , R.drawable.capibara);
+                                        mateList.add(item);
 
 
+                                    }
+                                    mateAdapter.submitList(mateList);
+                                }
                             }
-                            mateAdapter.submitList(mateList);
-                        }
-                    }
 
                     );
         }
