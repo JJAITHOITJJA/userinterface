@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <View
+        android:id="@+id/view_search_bar_bg"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.0914"
+        app:layout_constraintBottom_toTopOf="@id/view_search_bg"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    
+    <ImageView
+        android:id="@+id/iv_search_arrow_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_arrow_back"
+        android:layout_marginLeft="12dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/view_search_bar_bg"/>
+
+    <View
+        android:id="@+id/view_search_bar"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_search_box"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintStart_toEndOf="@+id/iv_search_arrow_back"
+        app:layout_constraintEnd_toEndOf="@id/view_search_bar_bg"
+        app:layout_constraintTop_toTopOf="@id/view_search_bar_bg"
+        app:layout_constraintBottom_toBottomOf="@id/view_search_bar_bg"/>
+
+    <ImageView
+        android:id="@+id/iv_search_ic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_search"
+        app:layout_constraintDimensionRatio="20:20"
+        app:layout_constraintWidth_percent="0.0508"
+        app:layout_constraintTop_toTopOf="@id/view_search_bar"
+        app:layout_constraintBottom_toBottomOf="@id/view_search_bar"
+        app:layout_constraintStart_toStartOf="@id/view_search_bar"
+        android:layout_marginStart="10dp" />
+
+    <EditText
+        android:id="@+id/et_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="찾고 싶은 책을 검색하세요!"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="@id/view_search_bar"
+        app:layout_constraintStart_toEndOf="@id/iv_search_ic"
+        app:layout_constraintBottom_toBottomOf="@id/view_search_bar"
+        android:layout_marginStart="10dp"
+        android:textColor="@color/font_main"
+        android:textColorHint="@color/font_sub"
+        android:textSize="13sp"
+        android:fontFamily="@font/pretendard_regular"
+        android:imeOptions="actionDone"
+        android:singleLine="true"/>
+
+    <ImageView
+        android:id="@+id/iv_search_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_x_circle"
+        app:layout_constraintEnd_toEndOf="@id/view_search_bar"
+        app:layout_constraintTop_toTopOf="@id/view_search_bar"
+        app:layout_constraintBottom_toBottomOf="@id/view_search_bar"
+        android:layout_marginEnd="12dp"
+        android:visibility="gone"/>
+
+    <View
+        android:id="@+id/view_search_bg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/view_search_bar_bg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="visible"/>
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fv_search_success"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/view_search_bar_bg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="invisible"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_search_fail"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/view_search_bar_bg">
+
+        <LinearLayout
+            android:id="@+id/ll_location_fail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tv_search_fail_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:fontFamily="@font/pretendard_medium"
+                android:text="검색결과를 찾지 못했어요!"
+                android:textColor="@color/font_main"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_search_fail_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/pretendard_medium"
+                android:text="책을 찾지 못해 페이지를 표시할 수 없어요.\n이용에 불편을 드려 죄송합니다."
+                android:textAlignment="center"
+                android:textColor="@color/font_sub"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
