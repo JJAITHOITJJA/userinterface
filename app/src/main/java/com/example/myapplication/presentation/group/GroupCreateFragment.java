@@ -56,7 +56,7 @@ public class GroupCreateFragment extends Fragment {
 
     private void initAddMateAdapter(){
         AddMateAdapter adapter = new AddMateAdapter();
-        adapter.setDeleteMode(true);
+        adapter.setDeleteMode(false);
         binding.rvAddedMate.setAdapter(adapter);
 
 

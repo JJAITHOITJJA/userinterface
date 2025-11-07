@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.myapplication"
-        minSdk = 34
+        minSdk = 31
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -55,6 +55,9 @@ dependencies {
 
     implementation(libs.flexbox)
     implementation(libs.androidx.recyclerview)
+
+    //캘린더
+    implementation("com.github.prolificinteractive:material-calendarview:2.0.1")
 
     // Hilt
     implementation(libs.hilt.android)

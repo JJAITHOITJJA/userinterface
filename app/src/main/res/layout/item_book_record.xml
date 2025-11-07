@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="#E0E0E0"
+    android:layout_marginBottom="16dp">
+    <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/ivBookCover"
+        android:layout_width="80dp"
+        android:layout_height="110dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/sayhello"
+        />
+    <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginStart="16dp">
+
+    <TextView
+        android:id="@+id/tvBookTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="우리는 페퍼로니에서 왔어"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/tvBookAuthor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="김금희"
+        android:textSize="10sp"
+        android:textColor="#8C8C8C"
+        android:layout_marginTop="4dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="오늘 읽은 페이지"
+            android:textSize="10sp"
+            android:textColor="#8C8C8C"
+            android:layout_marginTop="7dp"/>
+
+    <TextView
+        android:id="@+id/tvBookPage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="p. 2 - 113"
+        android:textSize="12sp"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:layout_marginTop="5dp"/>
+
+    <TextView
+        android:id="@+id/tvBookQuote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="love 오직 너뿐야 인생을 걸고 마지막 사랑이라고 말할 너지, 뭐든 같이하면 된다 생각하나 "
+        android:textSize="10sp"
+        android:textColor="#8C8C8C"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:layout_marginTop="4dp"/>
+
+</LinearLayout>
+</LinearLayout>
+</com.google.android.material.card.MaterialCardView>

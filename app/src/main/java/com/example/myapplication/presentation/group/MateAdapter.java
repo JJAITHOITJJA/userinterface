@@ -49,7 +49,7 @@ public class MateAdapter extends ListAdapter<MateItem, MateAdapter.MateViewHolde
         }
 
         public void bind(MateItem item) {
-            thumbnail.setImageResource(R.drawable.capibara);
+            thumbnail.setImageResource(item.getThumbnailResId());
             name.setText(item.getName());
             id.setText(item.getId());
 

@@ -41,11 +41,7 @@ public class LoginActivity extends AppCompatActivity {
             return insets;
         });
 
-        auth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
 
-
-        FirebaseFirestore.setLoggingEnabled(true);
 
         binding.tvLoginSignupBtn.setOnClickListener(new View.OnClickListener() {
             @Override
