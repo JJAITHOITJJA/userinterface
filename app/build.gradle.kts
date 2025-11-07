@@ -66,6 +66,9 @@ dependencies {
 
     implementation("de.hdodenhof:circleimageview:3.1.0")
 
+    // 사진 불러오기 Glide
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+
 
     // 파이어베이스
     implementation(platform("com.google.firebase:firebase-bom:34.5.0"))
