@@ -61,6 +61,9 @@ public class GroupFragment extends Fragment {
 
         navController = NavHostFragment.findNavController(this);
 
+        binding.flGroupList.setVisibility(View.GONE);
+        binding.loadingOverlay.setVisibility(View.VISIBLE);
+
         initAdapter();
         binding.fabAdd.setOnClickListener(v -> {
             navController.navigate(R.id.action_groupFragment_to_groupSearchFragment);
@@ -89,7 +92,7 @@ public class GroupFragment extends Fragment {
         loadGroupData();
     }
 
-    private List<GroupItem> loadGroupData(){
+    private void loadGroupData(){
         List<GroupItem> groupList = new ArrayList<>();
         String currentUserId = user.getUid();
 
@@ -105,6 +108,8 @@ public class GroupFragment extends Fragment {
                             groupList.add(item);
                         }
                         adapter.submitList(groupList);
+                        binding.flGroupList.setVisibility(View.VISIBLE);
+                        binding.loadingOverlay.setVisibility(View.GONE);
                     } else {
                         Log.e("GroupFragment", "Error getting documents: ", task.getException());
                         // 에러 처리 로직
@@ -112,6 +117,6 @@ public class GroupFragment extends Fragment {
                         adapter.submitList(Collections.emptyList());
                     }
                 });
-        return groupList;
+
     }
 }

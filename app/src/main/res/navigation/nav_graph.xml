@@ -23,7 +23,7 @@
 
         <action
             android:id="@+id/action_groupFragment_to_groupInsideFragment"
-            app:destination="@id/groupInsideFragment"/>"
+            app:destination="@id/groupInsideFragment"/>
     </fragment>
 
     <fragment
@@ -42,7 +42,11 @@
     <fragment
         android:id="@+id/groupCreateFragment"
         android:name="com.example.myapplication.presentation.group.GroupCreateFragment"
-        android:label="group create"/>
+        android:label="group create">
+        <action
+            android:id="@+id/action_groupCreateFragment_to_mateSearchFragment"
+            app:destination="@id/onmateSearchFragment"/>
+    </fragment>
 
     <fragment
         android:id="@+id/onmateSearchFragment"
@@ -58,7 +62,11 @@
     <fragment
         android:id="@+id/groupInsideFragment"
         android:name="com.example.myapplication.presentation.group.GroupInsideFragment"
-        android:label="그룹 내부 확인"/>
+        android:label="그룹 내부 확인">
+        <action
+            android:id="@+id/action_groupInsideFragment_to_groupCreateFragment"
+            app:destination="@id/groupCreateFragment"/>
+    </fragment>
 
 <!--    홈 관련 프래그먼트-->
 
