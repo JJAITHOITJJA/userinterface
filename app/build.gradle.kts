@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.hilt.android)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -9,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.myapplication"
-        minSdk = 34
+        minSdk = 31
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -55,6 +56,9 @@ dependencies {
     implementation(libs.flexbox)
     implementation(libs.androidx.recyclerview)
 
+    //캘린더
+    implementation("com.github.prolificinteractive:material-calendarview:2.0.1")
+
     // Hilt
     implementation(libs.hilt.android)
     annotationProcessor(libs.hilt.compiler)
@@ -62,5 +66,13 @@ dependencies {
 
     implementation("de.hdodenhof:circleimageview:3.1.0")
 
+    // 사진 불러오기 Glide
     implementation("com.github.bumptech.glide:glide:4.16.0")
+
+
+    // 파이어베이스
+    implementation(platform("com.google.firebase:firebase-bom:34.5.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
 }

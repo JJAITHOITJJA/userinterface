@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android">
+    <color android:name="calendar_weekend_color" tools:ignore="ExtraText">#8BC34A</color>
+    <color android:name="calendar_special_day_color">#388E3C</color>
+</selector>
