@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <TextView
+        android:id="@+id/tv_search_success_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14dp"
+        android:text="0"
+        android:bufferType="spannable"
+        android:textColor="@color/font_sub"
+        android:fontFamily="@font/pretendard_regular"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="17dp"
+        android:layout_marginStart="25dp"/>
+    
+    <TextView
+        android:id="@+id/tv_search_success_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14dp"
+        android:text="개의 검색 결과가 있습니다"
+        android:bufferType="spannable"
+        android:textColor="@color/font_sub"
+        android:fontFamily="@font/pretendard_regular"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf = "@id/tv_search_success_count"
+        android:layout_marginTop="17dp"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_location_search_success"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintTop_toBottomOf="@id/tv_search_success_title"
+        android:visibility="visible"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="13dp"
+        android:layout_marginEnd="24dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/item_book_search_result"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

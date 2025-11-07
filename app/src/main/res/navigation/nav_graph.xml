@@ -7,7 +7,11 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.myapplication.presentation.home.HomeFragment"
-        android:label="Home"/>
+        android:label="Home">
+        <action
+            android:id="@+id/action_homeFragment_to_recordCreateFragment"
+            app:destination="@+id/recordCreateFragment"/>
+    </fragment>
 
     <fragment
         android:id="@+id/groupFragment"
@@ -55,5 +59,25 @@
         android:id="@+id/groupInsideFragment"
         android:name="com.example.myapplication.presentation.group.GroupInsideFragment"
         android:label="그룹 내부 확인"/>
+
+<!--    홈 관련 프래그먼트-->
+
+    <fragment
+        android:id="@+id/recordCreateFragment"
+        android:name="com.example.myapplication.presentation.record.RecordCreateFragment"
+        android:label="record create">
+        <action
+            android:id="@+id/action_recordCreateFragment_to_bookSearchFragment"
+            app:destination="@+id/bookSearchFragment"/>
+        <argument
+            android:name="selectedBook"
+            app:argType="com.example.myapplication.data.search.Book"
+            app:nullable="true"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/bookSearchFragment"
+        android:name="com.example.myapplication.presentation.search.BookSearchFragment"
+        android:label="book search"/>
 
 </navigation>
