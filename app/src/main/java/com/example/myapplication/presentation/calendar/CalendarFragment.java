@@ -1,7 +1,6 @@
 package com.example.myapplication.presentation.calendar;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.style.ForegroundColorSpan;
@@ -17,10 +16,9 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.example.myapplication.databinding.FragmentCalendarBinding;
-import com.example.myapplication.data.calendar.BookRecord;
-import com.example.myapplication.presentation.calendar.BookRecordAdapter;
 import com.example.myapplication.R;
+import com.example.myapplication.data.calendar.BookRecord;
+import com.example.myapplication.databinding.FragmentCalendarBinding;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;
