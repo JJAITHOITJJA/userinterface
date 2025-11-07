@@ -10,13 +10,21 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 
+import com.example.myapplication.R;
 import com.example.myapplication.data.onmate.AddMateItem;
 import com.example.myapplication.databinding.FragmentGroupCreateBinding;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
 public class GroupCreateFragment extends Fragment {
     private FragmentGroupCreateBinding binding;
+
+    private FirebaseAuth auth ;
+    private FirebaseFirestore db;
+    private AddMateAdapter mateAdapter;
+
 
     public GroupCreateFragment()  {
     }
@@ -43,8 +51,13 @@ public class GroupCreateFragment extends Fragment {
         NavController navController = new NavController(getContext());
 
 //        binding.btnGroupCreate.setOnClickListener( view ->{
-//            navController.navigate();
+//
 //        });
+
+        binding.btnMateSearch.setOnClickListener(v->{
+            navController.navigate(R.id.action_groupCreateFragment_to_mateSearchFragment);
+        });
+
 
     }
 

@@ -58,7 +58,7 @@ public class AddMateAdapter extends ListAdapter<AddMateItem, AddMateAdapter.Mate
 
         public MateHorizontalViewHolder(View itemView) {
             super(itemView);
-            name = itemView.findViewById(R.id.tv_onmate_nickname);
+            name = itemView.findViewById(R.id.tv_add_mate_nickname);
             profileImage = itemView.findViewById(R.id.profile_image);
         }
 
