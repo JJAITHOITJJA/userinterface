@@ -33,9 +33,11 @@ public class GroupInsideFragment extends Fragment {
 
     private String groupId;
     private List<String> members;
-    private List<String> discussionList ;
+    private List<String> discussionList;
 
     private AddMateAdapter mateAdapter;
+
+    private NavController navController;
 
 
     @Override
@@ -65,6 +67,15 @@ public class GroupInsideFragment extends Fragment {
         initDiscussionAdapter();
         loadGroupInfo();
 
+        navController = NavHostFragment.findNavController(this);
+//
+//        binding.ivBackGroupList.setOnClickListener(view ->{
+//
+//        });
+
+        binding.fabGroupCreate.setOnClickListener(v->{
+        });
+
 
         NavController navController = NavHostFragment.findNavController(this);
 
@@ -84,12 +95,18 @@ public class GroupInsideFragment extends Fragment {
                     binding.tvGroupInsideName.setText(document.getString("name"));
                     binding.tvGroupDescription.setText(document.getString("description"));
 
-                    Map<String, Object> membersMap = (Map<String, Object>) document.get("members");
-                    Map<String, Object> discussionsMap = (Map<String, Object>) document.get("discussionList");
+                    Object membersObj = document.get("members");
+                    Object discussionsObj = document.get("discussionList");
 
-                    if (membersMap != null) {
+                    // members 처리
+                    if (membersObj instanceof List) {
+                        // ArrayList인 경우
+                        members = new ArrayList<>((List<String>) membersObj);
+                        loadGroupMate(members);
+                    } else if (membersObj instanceof Map) {
+                        // Map인 경우
+                        Map<String, Object> membersMap = (Map<String, Object>) membersObj;
                         members = new ArrayList<>();
-
                         for (Object memberValue : membersMap.values()) {
                             if (memberValue instanceof String) {
                                 members.add((String) memberValue);
@@ -98,7 +115,14 @@ public class GroupInsideFragment extends Fragment {
                         loadGroupMate(members);
                     }
 
-                    if(discussionsMap!= null){
+                    // discussionList 처리
+                    if(discussionsObj instanceof List){
+                        // ArrayList인 경우
+                        discussionList = new ArrayList<>((List<String>) discussionsObj);
+                        loadDiscussionData(discussionList);
+                    } else if(discussionsObj instanceof Map){
+                        // Map인 경우
+                        Map<String, Object> discussionsMap = (Map<String, Object>) discussionsObj;
                         discussionList = new ArrayList<>();
                         for(Object discussionValue : discussionsMap.values()){
                             if(discussionValue instanceof String){
@@ -113,41 +137,47 @@ public class GroupInsideFragment extends Fragment {
     }
 
     private void loadDiscussionData(List<String> discussionIds){
-
+        // 토론 데이터 로드 구현
     }
 
     private void initMemberAdapter(){
-        mateAdapter= new AddMateAdapter();
+        mateAdapter = new AddMateAdapter();
         mateAdapter.setDeleteMode(false);
         binding.rvGroupMate.setAdapter(mateAdapter);
     }
 
     // uid 리스트를 받아서 db에서 각 uid별로 객체 조회 후 adapter에 매핑해주는 함수
     private void loadGroupMate(List<String> members){
-        for(String memberIds : members){
-            List<AddMateItem> mateList = new ArrayList<>();
-            db.collection("users").document(memberIds).get()
+        if(members == null || members.isEmpty()){
+            return;
+        }
+
+        List<AddMateItem> mateList = new ArrayList<>();
+
+        for(String memberId : members){
+            db.collection("users").document(memberId).get()
                     .addOnCompleteListener(task -> {
                         if(task.isSuccessful()){
                             DocumentSnapshot document = task.getResult();
                             if(document.exists()){
-                                AddMateItem item = new AddMateItem(document.getString("nickname")
-                                        , document.getId()
-                                        , R.drawable.capibara);
+                                AddMateItem item = new AddMateItem(
+                                        document.getString("nickname"),
+                                        document.getId(),
+                                        R.drawable.capibara
+                                );
                                 mateList.add(item);
 
-
+                                // 모든 멤버 데이터가 로드되었을 때 어댑터 업데이트
+                                if(mateList.size() == members.size()){
+                                    mateAdapter.submitList(new ArrayList<>(mateList));
+                                }
                             }
-                            mateAdapter.submitList(mateList);
                         }
-                    }
-
-                    );
+                    });
         }
-
     }
 
     private void initDiscussionAdapter(){
-
+        // 토론 어댑터 초기화 구현
     }
 }

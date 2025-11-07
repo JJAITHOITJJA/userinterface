@@ -18,25 +18,30 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.myapplication.R;
+import com.example.myapplication.data.OnItemClickListener;
 import com.example.myapplication.data.group.GroupItem;
 import com.example.myapplication.databinding.FragmentGroupBinding;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class GroupFragment extends Fragment {
 
     FragmentGroupBinding binding;
-    private FirebaseAuth auth;
+    private NavController navController;
+    private FirebaseUser user;
     private FirebaseFirestore db;
+    private GroupAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        auth = FirebaseAuth.getInstance();
+        user = FirebaseAuth.getInstance().getCurrentUser();
         db = FirebaseFirestore.getInstance();
     }
 
@@ -54,7 +59,10 @@ public class GroupFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        NavController navController = NavHostFragment.findNavController(this);
+        navController = NavHostFragment.findNavController(this);
+
+        binding.flGroupList.setVisibility(View.GONE);
+        binding.loadingOverlay.setVisibility(View.VISIBLE);
 
         initAdapter();
         binding.fabAdd.setOnClickListener(v -> {
@@ -69,31 +77,46 @@ public class GroupFragment extends Fragment {
     }
 
     private void initAdapter(){
-        GroupAdapter adapter = new GroupAdapter();
+        adapter = new GroupAdapter(new OnItemClickListener<GroupItem>() {
+            @Override
+            public void onItemClick(GroupItem item, int position) {
+                String groupId = item.getGroupId(); // GroupItem에 getGroupId()가 있다고 가정
+
+                Bundle bundle = new Bundle();
+                bundle.putString("groupId", groupId);
+                navController.navigate(R.id.action_groupFragment_to_groupInsideFragment, bundle);
+            }
+        });
         binding.rvMygroupList.setAdapter(adapter);
         binding.rvMygroupList.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter.submitList(loadGroupData());
+        loadGroupData();
     }
 
-    private List<GroupItem> loadGroupData(){
+    private void loadGroupData(){
         List<GroupItem> groupList = new ArrayList<>();
-        String currentUserId = auth.getCurrentUser().getUid();
+        String currentUserId = user.getUid();
 
-        db.collection("groups")
+        db.collection("group")
                 .whereArrayContains("members", currentUserId)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
+                        Log.d("GroupFragment", "Documents fetched: " + task.getResult().size());
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             GroupItem item = document.toObject(GroupItem.class);
+                            item.setGroupId(document.getId());
                             groupList.add(item);
                         }
+                        adapter.submitList(groupList);
+                        binding.flGroupList.setVisibility(View.VISIBLE);
+                        binding.loadingOverlay.setVisibility(View.GONE);
                     } else {
                         Log.e("GroupFragment", "Error getting documents: ", task.getException());
                         // 에러 처리 로직
                         Toast.makeText(getContext(), "그룹 목록을 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                        adapter.submitList(Collections.emptyList());
                     }
                 });
-        return groupList;
+
     }
 }
