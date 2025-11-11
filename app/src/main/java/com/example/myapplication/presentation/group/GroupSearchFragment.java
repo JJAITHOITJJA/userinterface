@@ -4,7 +4,10 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.myapplication.R;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +18,7 @@ public class GroupSearchFragment extends Fragment {
 
 
     private FragmentGroupSearchBinding binding;
+    private NavController navController;
 
     public GroupSearchFragment() {
     }
@@ -39,6 +43,12 @@ public class GroupSearchFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        navController = NavHostFragment.findNavController(this);
+
+
+        binding.fabGroupCreate.setOnClickListener(v -> {
+            navController.navigate(R.id.action_groupSearchFragment_to_groupCreateFragment);
+        });
 
     }
 

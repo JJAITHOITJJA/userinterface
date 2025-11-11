@@ -16,6 +16,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.myapplication.R;
+import com.example.myapplication.data.group.DiscussionItem;
 import com.example.myapplication.data.group.GroupItem;
 import com.example.myapplication.data.onmate.AddMateItem;
 import com.example.myapplication.databinding.FragmentGroupInsideBinding;
@@ -23,6 +24,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -36,6 +38,7 @@ public class GroupInsideFragment extends Fragment {
     private List<String> discussionList;
 
     private AddMateAdapter mateAdapter;
+    private DiscussionAdapter discussionAdapter;
 
     private NavController navController;
 
@@ -68,16 +71,15 @@ public class GroupInsideFragment extends Fragment {
         loadGroupInfo();
 
         navController = NavHostFragment.findNavController(this);
-//
-//        binding.ivBackGroupList.setOnClickListener(view ->{
-//
-//        });
 
-        binding.fabGroupCreate.setOnClickListener(v->{
+        binding.ivBackGroupList.setOnClickListener(v->{
+            navController.popBackStack();
+        });
+
+        binding.fabDiscussionCreate.setOnClickListener(v->{
         });
 
 
-        NavController navController = NavHostFragment.findNavController(this);
 
     }
 
@@ -137,7 +139,31 @@ public class GroupInsideFragment extends Fragment {
     }
 
     private void loadDiscussionData(List<String> discussionIds){
-        // 토론 데이터 로드 구현
+        for(String discussionId : discussionIds){
+            List<DiscussionItem> discussionItems  = new ArrayList<>();
+            db.collection("discussion").document(discussionId).get()
+                    .addOnCompleteListener(task -> {
+                        if(task.isSuccessful()){
+                            DocumentSnapshot document = task.getResult();
+                            if(document.exists()){
+                                String bookName =document.getString("bookName");
+                                String author = document.getString("author");
+                                String topic = document.getString("topic");
+                                DiscussionItem item = new DiscussionItem(
+                                        discussionId,
+                                        bookName,
+                                        author,
+                                        "",
+                                        topic,
+                                        FieldValue.serverTimestamp().toString());
+                                discussionItems.add(item);
+                            }
+                        }
+                    }
+            );
+            discussionAdapter.submitList(discussionItems);
+
+        }
     }
 
     private void initMemberAdapter(){
@@ -179,5 +205,8 @@ public class GroupInsideFragment extends Fragment {
 
     private void initDiscussionAdapter(){
         // 토론 어댑터 초기화 구현
+        discussionAdapter = new DiscussionAdapter();
+        binding.rvDiscussionList.setAdapter(discussionAdapter);
+        discussionAdapter.submitList(Collections.emptyList());
     }
 }

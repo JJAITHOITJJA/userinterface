@@ -8,7 +8,10 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.myapplication.R;
 import com.example.myapplication.data.onmate.AddMateItem;
@@ -17,9 +20,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class GroupCreateFragment extends Fragment {
     private FragmentGroupCreateBinding binding;
+    private AddMateViewModel viewModel;
 
     private FirebaseAuth auth ;
     private FirebaseFirestore db;
@@ -48,7 +53,13 @@ public class GroupCreateFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        NavController navController = new NavController(getContext());
+
+        initAddMateAdapter();
+
+        viewModel = new ViewModelProvider(requireActivity()).get(
+                AddMateViewModel.class);
+
+        NavController navController = NavHostFragment.findNavController(this);
 
 //        binding.btnGroupCreate.setOnClickListener( view ->{
 //
@@ -71,6 +82,17 @@ public class GroupCreateFragment extends Fragment {
         AddMateAdapter adapter = new AddMateAdapter();
         adapter.setDeleteMode(false);
         binding.rvAddedMate.setAdapter(adapter);
+        binding.rvAddedMate.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter.submitList(Collections.emptyList());
+
+
+    }
+
+    private void createGroup(){
+        String groupName = binding.etGroupName.getText().toString();
+        String groupDescription = binding.etDescription.getText().toString();
+        String groupPassword = binding.etPassword.getText().toString();
+
 
 
     }
