@@ -68,9 +68,14 @@
         android:name="com.example.myapplication.presentation.group.GroupInsideFragment"
         android:label="그룹 내부 확인">
         <action
-            android:id="@+id/action_groupInsideFragment_to_groupCreateFragment"
-            app:destination="@id/groupCreateFragment"/>
+            android:id="@+id/action_groupInsideFragment_to_groupDiscussionFragment"
+            app:destination="@id/groupBookFragment"/>
     </fragment>
+
+    <fragment
+        android:id="@+id/DiscussionCreateFragment"
+        android:name="com.example.myapplication.presentation.group.discussion.DiscussionCreateFragment"
+        android:label="그룹 토론 만들기 화면"/>
 
 <!--    홈 관련 프래그먼트-->
 

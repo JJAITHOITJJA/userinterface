@@ -5,7 +5,7 @@
     android:background="@drawable/bg_record_review"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="10dp"
+    android:paddingTop="10dp"
     android:maxHeight="300dp">
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/comment_owner_profile_img"
@@ -39,14 +39,6 @@
         app:layout_constraintStart_toEndOf="@id/item_comment_username"
         app:layout_constraintBottom_toBottomOf="@id/item_comment_username"
         android:layout_marginStart="10dp"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="p"
-        android:textSize="15sp"
-        app:layout_constraintStart_toEndOf="@id/item_comment_page"
-        app:layout_constraintBottom_toBottomOf="@id/item_comment_username"
-        android:layout_marginStart="5dp"/>
 
     <TextView
         android:id="@+id/tv_comment_date"
@@ -55,7 +47,7 @@
         android:text="2025.10.12 16:49PM"
         android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="5dp"
+        android:layout_marginEnd="15dp"
         app:layout_constraintBottom_toBottomOf="@id/item_comment_username"/>
 
     <TextView
@@ -75,6 +67,7 @@
         android:layout_height="wrap_content"
         android:text="대댓글"
         android:padding="10dp"
+        android:layout_marginEnd="5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_comment_content"/>
 

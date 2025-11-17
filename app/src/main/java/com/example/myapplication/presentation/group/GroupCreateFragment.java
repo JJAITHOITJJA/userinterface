@@ -54,7 +54,7 @@ public class GroupCreateFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+                                @Nullable Bundle savedInstanceState) {
 
         binding = FragmentGroupCreateBinding.inflate(inflater, container, false);
         return binding.getRoot();

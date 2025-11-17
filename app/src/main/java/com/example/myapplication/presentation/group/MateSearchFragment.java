@@ -19,9 +19,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 
-import com.example.myapplication.R;
 import com.example.myapplication.data.OnItemClickListener;
-import com.example.myapplication.data.group.GroupItem;
 import com.example.myapplication.data.onmate.AddMateItem;
 import com.example.myapplication.data.onmate.MateItem;
 import com.example.myapplication.databinding.FragmentSearchMateBinding;
