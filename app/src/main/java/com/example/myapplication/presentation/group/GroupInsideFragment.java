@@ -1,6 +1,7 @@
 package com.example.myapplication.presentation.group;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.myapplication.R;
 import com.example.myapplication.data.group.DiscussionItem;
@@ -139,30 +141,40 @@ public class GroupInsideFragment extends Fragment {
     }
 
     private void loadDiscussionData(List<String> discussionIds){
+        if(discussionIds == null || discussionIds.isEmpty()){
+            discussionAdapter.submitList(Collections.emptyList());
+            return;
+        }
+
+        Log.d("GroupInsideFragment", "그룹 내부의 discussion data를 불러옵니다");
+        List<DiscussionItem> discussionItems = new ArrayList<>();
+
         for(String discussionId : discussionIds){
-            List<DiscussionItem> discussionItems  = new ArrayList<>();
             db.collection("discussion").document(discussionId).get()
                     .addOnCompleteListener(task -> {
                         if(task.isSuccessful()){
                             DocumentSnapshot document = task.getResult();
                             if(document.exists()){
-                                String bookName =document.getString("bookName");
+                                String bookName = document.getString("bookName");
                                 String author = document.getString("author");
                                 String topic = document.getString("topic");
+
                                 DiscussionItem item = new DiscussionItem(
                                         discussionId,
                                         bookName,
                                         author,
                                         "",
                                         topic,
-                                        FieldValue.serverTimestamp().toString());
+                                        FieldValue.serverTimestamp().toString()
+                                );
                                 discussionItems.add(item);
+
+                                if(discussionItems.size() == discussionIds.size()){
+                                    discussionAdapter.submitList(new ArrayList<>(discussionItems));
+                                }
                             }
                         }
-                    }
-            );
-            discussionAdapter.submitList(discussionItems);
-
+                    });
         }
     }
 
@@ -189,7 +201,7 @@ public class GroupInsideFragment extends Fragment {
                                 AddMateItem item = new AddMateItem(
                                         document.getString("nickname"),
                                         document.getId(),
-                                        R.drawable.capibara
+                                        document.getString("profileImageUrl")
                                 );
                                 mateList.add(item);
 
@@ -199,13 +211,15 @@ public class GroupInsideFragment extends Fragment {
                                 }
                             }
                         }
-                    });
+                    }
+            );
         }
     }
 
     private void initDiscussionAdapter(){
         // 토론 어댑터 초기화 구현
         discussionAdapter = new DiscussionAdapter();
+        binding.rvDiscussionList.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.rvDiscussionList.setAdapter(discussionAdapter);
         discussionAdapter.submitList(Collections.emptyList());
     }

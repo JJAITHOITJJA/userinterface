@@ -9,6 +9,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.DiffUtil;
+
+import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.data.OnItemClickListener;
 import com.example.myapplication.data.onmate.MateItem;
@@ -79,7 +81,17 @@ public class MateSearchAdapter extends ListAdapter<MateItem, MateSearchAdapter.M
         }
 
         public void bind(MateItem item) {
-            profileImage.setImageResource(R.drawable.capibara); // TODO : 나중에 storage 사용 가능하게 되면 기능 추가하기
+            String imageUrl = item.getProfileImageUrl();
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+                Glide.with(itemView.getContext())
+                        .load(imageUrl)
+                        .placeholder(R.drawable.capibara)
+                        .error(R.drawable.capibara)
+                        .circleCrop()
+                        .into(profileImage);
+            } else {
+                profileImage.setImageResource(R.drawable.capibara);
+            }
             name.setText(item.getName());
             id.setText(item.getId());
         }

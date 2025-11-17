@@ -55,6 +55,7 @@ public class MateSearchFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
+
         // ViewModel 초기화 (중요!)
         viewModel = new ViewModelProvider(requireActivity()).get(AddMateViewModel.class);
 
@@ -100,6 +101,10 @@ public class MateSearchFragment extends Fragment {
         binding.ivBackCreateGroupBtn.setOnClickListener(v-> {
             navController.popBackStack();
         });
+
+        binding.tvReturnToCreateBtn.setOnClickListener(v->
+                navController.popBackStack()
+        );
     }
 
     @Override
@@ -132,7 +137,7 @@ public class MateSearchFragment extends Fragment {
     }
 
     private AddMateItem toAddMateItem(MateItem item){
-        return new AddMateItem(item.getName(), item.getUId(), R.drawable.capibara);
+        return new AddMateItem(item.getName(), item.getUId(), item.getProfileImageUrl());
     }
 
     private void initAddedMateListAdapter(){
@@ -144,6 +149,21 @@ public class MateSearchFragment extends Fragment {
                     }
                 }
         );
+        String myId= auth.getCurrentUser().getUid();
+        db.collection("users").document(myId).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            String nickname = document.getString("nickname");
+                            String profileImageUrl = document.getString("profileImageUrl");
+                            AddMateItem myMate = new AddMateItem(nickname, myId, profileImageUrl);
+                            viewModel.addMateToSelection(myMate);
+                        }
+                    }
+                });
+        addedAdapter.submitList(viewModel.addedMates.getValue());
+
         addedAdapter.setDeleteMode(true); // 삭제 모드 설정
 
         if(binding != null && binding.rvAddedMate != null) {

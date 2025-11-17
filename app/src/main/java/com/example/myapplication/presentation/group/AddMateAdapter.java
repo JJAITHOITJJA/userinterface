@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.view.View;
 
+import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.data.OnItemClickListener;
 import com.example.myapplication.data.group.GroupItem;
@@ -77,8 +78,19 @@ public class AddMateAdapter extends ListAdapter<AddMateItem, AddMateAdapter.Mate
         }
 
         public void bind(AddMateItem item, boolean isDeleteMode) {
-            profileImage.setImageResource(item.getProfileImageUrl());
             name.setText(item.getName());
+
+            String imageUrl = item.getProfileImageUrl();
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+                Glide.with(itemView.getContext())
+                        .load(imageUrl)
+                        .placeholder(R.drawable.capibara)
+                        .error(R.drawable.capibara)
+                        .circleCrop()
+                        .into(profileImage);
+            } else {
+                profileImage.setImageResource(R.drawable.capibara);
+            }
 
             if(isDeleteMode){
                 itemView.findViewById(R.id.btn_delete_mate).setVisibility(View.VISIBLE);

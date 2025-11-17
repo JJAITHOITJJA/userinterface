@@ -69,7 +69,7 @@ public class DiscussionAdapter extends ListAdapter<DiscussionItem, DiscussionAda
             super(itemView);
             discussionBookname = itemView.findViewById(R.id.tv_discussion_book_name);
             topic = itemView.findViewById(R.id.tv_discuss_topic);
-            author = itemView.findViewById(R.id.tv_book_select_author);
+            author = itemView.findViewById(R.id.tv_author_name);
 
         }
 
