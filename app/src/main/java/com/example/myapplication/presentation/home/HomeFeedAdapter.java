@@ -20,15 +20,24 @@ import com.example.myapplication.data.home.FeedItem;
 public class HomeFeedAdapter extends ListAdapter<FeedItem, HomeFeedAdapter.FeedViewHolder> {
 
     private OnItemClickListener onItemClickListener;
+    private OnItemLongClickListener onItemLongClickListener;
 
     public interface OnItemClickListener {
         void onItemClick(FeedItem item);
+    }
+
+    public interface OnItemLongClickListener {
+        void onItemLongClick(FeedItem item);
     }
 
     public HomeFeedAdapter(){super(new FeedItemDiffCallback());}
 
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.onItemClickListener = listener;
+    }
+
+    public void setOnItemLongClickListener(OnItemLongClickListener listener) {
+        this.onItemLongClickListener = listener;
     }
 
     private static class FeedItemDiffCallback extends DiffUtil.ItemCallback<FeedItem> {
@@ -57,7 +66,7 @@ public class HomeFeedAdapter extends ListAdapter<FeedItem, HomeFeedAdapter.FeedV
             author = itemView.findViewById(R.id.tv_home_book_author);
         }
 
-        public void bind(FeedItem item, OnItemClickListener listener) {
+        public void bind(FeedItem item, OnItemClickListener listener, OnItemLongClickListener longClickListener) {
             if (item.getCoverImageUrl() != null && !item.getCoverImageUrl().isEmpty()) {
                 Glide.with(itemView.getContext())
                         .load(item.getCoverImageUrl())
@@ -76,6 +85,14 @@ public class HomeFeedAdapter extends ListAdapter<FeedItem, HomeFeedAdapter.FeedV
                     listener.onItemClick(item);
                 }
             });
+
+            itemView.setOnLongClickListener(v -> {
+                if (longClickListener != null) {
+                    longClickListener.onItemLongClick(item);
+                    return true;
+                }
+                return false;
+            });
         }
     }
 
@@ -90,6 +107,6 @@ public class HomeFeedAdapter extends ListAdapter<FeedItem, HomeFeedAdapter.FeedV
     @Override
     public void onBindViewHolder(@NonNull FeedViewHolder holder, int position) {
         FeedItem item = getItem(position);
-        holder.bind(item, onItemClickListener);
+        holder.bind(item, onItemClickListener, onItemLongClickListener);
     }
 }

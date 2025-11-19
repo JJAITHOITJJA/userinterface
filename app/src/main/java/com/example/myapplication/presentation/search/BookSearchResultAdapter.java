@@ -61,8 +61,8 @@ public class BookSearchResultAdapter extends RecyclerView.Adapter<BookSearchResu
 
         public void bind(Book book, boolean isLastItem) {
             binding.tvBookSearchResultItemTitle.setText(book.getTitle());
-            binding.tvBookSearchResultItemAuthor.setText(book.getAuthor());
-            binding.tvBookSearchResultItemPublisher.setText(book.getPublisher());
+            String info = book.getAuthor() + " / " + book.getPublisher();
+            binding.tvBookSearchResultItemAuthor.setText(info);
 
             Glide.with(itemView.getContext())
                     .load(book.getImageUrl())
