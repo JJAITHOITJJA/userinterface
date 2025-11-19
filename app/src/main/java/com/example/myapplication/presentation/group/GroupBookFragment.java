@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.data.group.CommentItem;
 import com.example.myapplication.databinding.FragmentGroupBookBinding;
+import com.example.myapplication.presentation.MainActivity;
 import com.example.myapplication.presentation.group.discussion.CommentAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -40,6 +41,10 @@ public class GroupBookFragment extends Fragment {
     private FirebaseFirestore db;
     private CommentAdapter commentAdapter;
 
+    // 대댓글 모드 관리
+    private boolean isReplyMode = false;
+    private String replyToCommentId = null;
+
     public GroupBookFragment() {
     }
 
@@ -49,6 +54,7 @@ public class GroupBookFragment extends Fragment {
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         db = FirebaseFirestore.getInstance();
+        ((MainActivity) getActivity()).hideBottom();
         Log.d("GroupBookFragment", "onCreate 실행");
 
         if (getArguments() != null) {
@@ -80,12 +86,20 @@ public class GroupBookFragment extends Fragment {
         loadDiscussionDetail();
 
         setupRecyclerView();
-        Log.d("GroupBookFragment", "onViewCreated 완료");
+
+        binding.tvCommentTransmitBtn.setOnClickListener(v-> {
+            if (isReplyMode) {
+                writeRecomment();
+            } else {
+                writeComment();
+            }
+        });
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        ((MainActivity) getActivity()).hideBottom();
         loadCommentData();
         Log.d("GroupBookFragment", "onResume 실행: loadCommentData 시작");
     }
@@ -93,8 +107,36 @@ public class GroupBookFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        ((MainActivity) getActivity()).showBottom();
         binding = null;
         Log.d("GroupBookFragment", "onDestroyView 실행");
+    }
+
+    private void writeRecomment(){
+        String content = binding.etComment.getText().toString();
+        String userId= user.getUid();
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("content", content);
+        map.put("userId", userId);
+        map.put("createdAt", new Date());
+
+        db.collection("discussion").document(discussionId)
+                .collection("comment").document(replyToCommentId)
+                .collection("recomment").add(map)
+                .addOnSuccessListener(documentReference -> {
+                    Log.d("GroupBookFragment", "대댓글 작성 성공");
+
+                    // 대댓글 모드 해제
+                    isReplyMode = false;
+                    replyToCommentId = null;
+
+                    // UI 초기화
+                    binding.etComment.setText("");
+                    binding.etComment.setHint("댓글을 입력하세요");
+
+                    loadCommentData();
+                });
     }
 
     private void loadDiscussionDetail() {
@@ -126,6 +168,18 @@ public class GroupBookFragment extends Fragment {
 
     private void setupRecyclerView() {
         commentAdapter = new CommentAdapter();
+        commentAdapter.setOnCommentActionListener(
+                (item, position) -> {
+                    // 대댓글 모드 활성화
+                    isReplyMode = true;
+                    replyToCommentId = item.getId();
+
+                    // EditText에 포커스 이동 및 힌트 변경
+                    binding.etComment.setHint("@" + item.getNickname() + "님에게 답글");
+                    binding.etComment.requestFocus();
+                    Log.d("GroupBookFragment", "대댓글 모드 활성화: " + replyToCommentId);
+                }
+        );
         binding.rvCommentList.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.rvCommentList.setAdapter(commentAdapter);
         Log.d("GroupBookFragment", "RecyclerView 및 Adapter 설정 완료");
@@ -311,8 +365,28 @@ public class GroupBookFragment extends Fragment {
                 flatList.addAll(items);
             }
         }
-
-        Log.d("GroupBookFragment", "댓글/대댓글 평탄화 및 정렬 완료.");
         return flatList;
     }
+
+    private void writeComment(){
+        String content = binding.etComment.getText().toString();
+        String userId= user.getUid();
+        String page= binding.etPageInput.getText().toString();
+        Long pageNumber = Long.parseLong(page);
+
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("content", content);
+        map.put("userId", userId);
+        map.put("createdAt", new Date());
+        map.put("page", pageNumber);
+
+        db.collection("discussion").document(discussionId).collection("comment").add(map);
+        binding.etComment.setText("");
+        binding.etPageInput.setText("");
+
+        loadCommentData();
+    }
+
+
 }

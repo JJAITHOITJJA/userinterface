@@ -70,7 +70,18 @@
         <action
             android:id="@+id/action_groupInsideFragment_to_groupDiscussionFragment"
             app:destination="@id/groupBookFragment"/>
+        <action
+            android:id="@+id/action_groupInsideFragment_to_groupDiscussionCreateFragment"
+            app:destination="@id/DiscussionCreateFragment"/>
+        <action
+            android:id="@+id/action_groupInsideFragment_to_groupEditFragment"
+            app:destination="@id/groupCreateFragment"/>
     </fragment>
+
+    <fragment
+        android:id="@+id/GroupEditFragment"
+        android:name="com.example.myapplication.presentation.group.GroupEditFragment"
+        android:label="그룹 수정 화면"/>
 
     <fragment
         android:id="@+id/DiscussionCreateFragment"

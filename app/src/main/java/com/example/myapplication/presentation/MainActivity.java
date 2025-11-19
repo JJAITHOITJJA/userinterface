@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
 
         navController = navHostFragment.getNavController();
 
-        // ✅ BottomNavigationView + NavController 연결
         NavigationUI.setupWithNavController(binding.bottomNavigationView, navController);
 
 

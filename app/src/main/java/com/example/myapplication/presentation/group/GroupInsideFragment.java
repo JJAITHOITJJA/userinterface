@@ -21,6 +21,7 @@ import com.example.myapplication.R;
 import com.example.myapplication.data.group.DiscussionItem;
 import com.example.myapplication.data.onmate.AddMateItem;
 import com.example.myapplication.databinding.FragmentGroupInsideBinding;
+import com.example.myapplication.presentation.MainActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -47,7 +48,7 @@ public class GroupInsideFragment extends Fragment {
         super.onCreate(savedInstanceState);
         user = FirebaseAuth.getInstance().getCurrentUser();
         db = FirebaseFirestore.getInstance();
-        Log.d("GroupInsideFragment", "onCreate 실행");
+        ((MainActivity) getActivity()).hideBottom();
     }
 
     @Override
@@ -55,7 +56,7 @@ public class GroupInsideFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
 
         binding = FragmentGroupInsideBinding.inflate(inflater, container, false);
-        Log.d("GroupInsideFragment", "onCreateView 실행");
+
         return binding.getRoot();
     }
 
@@ -85,8 +86,12 @@ public class GroupInsideFragment extends Fragment {
         });
 
         binding.fabDiscussionCreate.setOnClickListener(v->{
-            Log.d("GroupInsideFragment", "토론 생성 FAB 클릭");
+            navController.navigate(R.id.action_groupInsideFragment_to_groupDiscussionCreateFragment);
         });
+
+        binding.ivGroupEdit.setOnClickListener(v->
+                navController.navigate(R.id.action_groupInsideFragment_to_groupEditFragment)
+                );
 
 
 
@@ -95,8 +100,8 @@ public class GroupInsideFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        ((MainActivity) getActivity()).showBottom();
         binding = null;
-        Log.d("GroupInsideFragment", "onDestroyView 실행");
     }
 
     private void loadGroupInfo(){
