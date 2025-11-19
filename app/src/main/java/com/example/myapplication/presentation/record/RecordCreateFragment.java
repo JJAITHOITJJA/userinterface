@@ -3,6 +3,7 @@ package com.example.myapplication.presentation.record;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,18 +21,30 @@ import com.example.myapplication.data.home.FeedItem;
 import com.example.myapplication.data.search.Book;
 import com.example.myapplication.databinding.FragmentRecordCreateBinding;
 import com.example.myapplication.presentation.MainActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class RecordCreateFragment extends Fragment {
+
+    private static final String TAG = "RecordCreateFragment";
 
     private FragmentRecordCreateBinding binding;
     private Book selectedBook;
     private int currentRating = 0;
     private ImageView[] stars;
     private String selectedDate;
+
+    private FirebaseFirestore db;
+    private FirebaseAuth auth;
 
     @Nullable
     @Override
@@ -46,6 +59,10 @@ public class RecordCreateFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ((MainActivity) requireActivity()).hideBottom();
+
+        // Firebase 초기화
+        db = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
 
         initializeStars();
         setupBookSearchClickListeners();
@@ -125,7 +142,7 @@ public class RecordCreateFragment extends Fragment {
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
-                calendar.get(calendar.DAY_OF_MONTH)
+                calendar.get(Calendar.DAY_OF_MONTH)
         );
 
         datePickerDialog.show();
@@ -260,7 +277,16 @@ public class RecordCreateFragment extends Fragment {
     }
 
     private void createRecord() {
-        /// 입력된 정보 수집
+        // 현재 사용자 확인
+        FirebaseUser currentUser = auth.getCurrentUser();
+        if (currentUser == null) {
+            Toast.makeText(getContext(), "로그인이 필요합니다", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String userId = currentUser.getUid();
+
+        // 입력된 정보 수집
         String startPageStr = binding.etRecordPage1.getText().toString().trim();
         String endPageStr = binding.etRecordPage2.getText().toString().trim();
         int startPage = Integer.parseInt(startPageStr);
@@ -270,36 +296,133 @@ public class RecordCreateFragment extends Fragment {
 
         String status = binding.cbRecordStateReading.isChecked() ? "읽는중" : "완독";
         String category = binding.cbRecordCategoryLiterature.isChecked() ? "문학" : "비문학";
-        boolean isPrivate = binding.cbRecordPrivate.isChecked();
+        boolean isPublic = !binding.cbRecordPrivate.isChecked();
 
-        // FeedItem 생성
-        FeedItem newFeedItem = new FeedItem(
-                String.valueOf(System.currentTimeMillis()),
-                selectedBook.getTitle(),
-                selectedBook.getAuthor(),
-                selectedBook.getImageUrl(),
-                selectedDate,
-                currentRating,
-                startPage,
-                endPage,
-                review,
-                status,
-                category,
-                isPrivate
-        );
+        String isbn = selectedBook.getIsbn();
 
-        // HomeFragment로 결과 전달
-        Bundle result = new Bundle();
-        result.putParcelable("new_feed_item", newFeedItem);
+        // Book 컬렉션 참조
+        DocumentReference bookRef = db.collection("users")
+                .document(userId)
+                .collection("books")
+                .document(isbn);
 
-        getParentFragmentManager().setFragmentResult("record_created", result);
+        // Book 문서가 존재하는지 확인
+        bookRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                // Book이 이미 존재하면 category와 status 업데이트
+                updateBookFields(bookRef, category, status, selectedDate, isPublic);
+            } else {
+                // Book이 존재하지 않으면 새로 생성
+                createNewBook(bookRef, category, status, selectedDate, isPublic);
+            }
 
-        Toast.makeText(getContext(), "기록이 추가되었습니다", Toast.LENGTH_SHORT).show();
+            // Record 추가 (books와 같은 계층에)
+            addRecord(userId, isbn, startPage, endPage, review, isPublic);
 
-        // 이전 화면으로 돌아가기
-        if (getActivity() != null) {
-            getActivity().onBackPressed();
-        }
+        }).addOnFailureListener(e -> {
+            Log.e(TAG, "Book 확인 실패", e);
+            Toast.makeText(getContext(), "기록 추가에 실패했습니다", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void createNewBook(DocumentReference bookRef, String category, String status,
+                                String lastRecordDate, boolean isPublic) {
+        Map<String, Object> bookData = new HashMap<>();
+        bookData.put("isbn", selectedBook.getIsbn());
+        bookData.put("title", selectedBook.getTitle());
+        bookData.put("author", selectedBook.getAuthor());
+        bookData.put("cover", selectedBook.getImageUrl());
+        bookData.put("category", category);
+        bookData.put("status", status);
+        bookData.put("isPublic", isPublic);
+        bookData.put("lastRecordDate", lastRecordDate);
+        bookData.put("createdAt", FieldValue.serverTimestamp());
+
+        bookRef.set(bookData)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "Book 생성 성공");
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Book 생성 실패", e);
+                });
+    }
+
+    private void updateBookFields(DocumentReference bookRef, String category, String status,
+                                   String lastRecordDate, boolean isPublic) {
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("category", category);
+        updates.put("status", status);
+        updates.put("lastRecordDate", lastRecordDate);
+        updates.put("isPublic", isPublic);
+
+        bookRef.update(updates)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "Book 업데이트 성공");
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Book 업데이트 실패", e);
+                });
+    }
+
+    private void addRecord(String userId, String isbn, int startPage, int endPage,
+                           String review, boolean isPublic) {
+        // Record 데이터 생성
+        Map<String, Object> recordData = new HashMap<>();
+        recordData.put("isbn", isbn);
+        recordData.put("cover", selectedBook.getImageUrl());
+        recordData.put("title", selectedBook.getTitle());
+        recordData.put("date", selectedDate);
+        recordData.put("startPage", startPage);
+        recordData.put("endPage", endPage);
+        recordData.put("rating", currentRating);
+        recordData.put("review", review);
+        recordData.put("isPublic", isPublic);
+        recordData.put("createdAt", FieldValue.serverTimestamp());
+
+        // users/{userId}/records 컬렉션에 추가 (books와 같은 계층)
+        db.collection("users")
+                .document(userId)
+                .collection("records")
+                .add(recordData)
+                .addOnSuccessListener(documentReference -> {
+                    Log.d(TAG, "Record 추가 성공: " + documentReference.getId());
+
+                    // FeedItem 생성 (기존 로직 유지)
+                    String status = binding.cbRecordStateReading.isChecked() ? "읽는중" : "완독";
+                    String category = binding.cbRecordCategoryLiterature.isChecked() ? "문학" : "비문학";
+                    boolean isPrivate = binding.cbRecordPrivate.isChecked();
+
+                    FeedItem newFeedItem = new FeedItem(
+                            documentReference.getId(),
+                            selectedBook.getTitle(),
+                            selectedBook.getAuthor(),
+                            selectedBook.getImageUrl(),
+                            selectedDate,
+                            currentRating,
+                            startPage,
+                            endPage,
+                            review,
+                            status,
+                            category,
+                            isPrivate
+                    );
+
+                    // HomeFragment로 결과 전달
+                    Bundle result = new Bundle();
+                    result.putParcelable("new_feed_item", newFeedItem);
+                    getParentFragmentManager().setFragmentResult("record_created", result);
+
+                    Toast.makeText(getContext(), "기록이 추가되었습니다", Toast.LENGTH_SHORT).show();
+
+                    // 이전 화면으로 돌아가기
+                    if (getActivity() != null) {
+                        getActivity().onBackPressed();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Record 추가 실패", e);
+                    Toast.makeText(getContext(), "기록 추가에 실패했습니다", Toast.LENGTH_SHORT).show();
+                });
     }
 
     @Override

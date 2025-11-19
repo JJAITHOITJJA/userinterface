@@ -3,10 +3,12 @@ package com.example.myapplication.presentation.search;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -21,9 +23,15 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class BookSearchFragment extends Fragment {
 
     private FragmentBookSearchBinding binding;
+    private static final String TAG = "BookSearchFragment";
+    private static final String ALADIN_API_KEY = "ttbseongju14161409001";
 
     @Nullable
     @Override
@@ -43,7 +51,31 @@ public class BookSearchFragment extends Fragment {
         setUpSearchBar();
         setupBackButton();
 
-        performSearch("");
+        // 초기 상태 설정
+        showInitialState();
+
+        // 키보드 자동 표시
+        showKeyboard();
+    }
+
+    private void showInitialState() {
+        binding.viewSearchBg.setVisibility(View.VISIBLE);
+        binding.fvSearchSuccess.setVisibility(View.GONE);
+        binding.clSearchFail.setVisibility(View.GONE);
+    }
+
+    private void showKeyboard() {
+        if (binding.etSearch != null) {
+            binding.etSearch.requestFocus();
+            binding.etSearch.postDelayed(() -> {
+                android.view.inputmethod.InputMethodManager imm =
+                        (android.view.inputmethod.InputMethodManager) requireContext()
+                                .getSystemService(android.content.Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    imm.showSoftInput(binding.etSearch, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);
+                }
+            }, 200);
+        }
     }
 
     private void setUpSearchBar() {
@@ -102,23 +134,67 @@ public class BookSearchFragment extends Fragment {
     }
 
     private void performSearch(String query) {
-        List<Book> searchResults = searchBooks(query);
-
-        if (!searchResults.isEmpty()) {
-            showSearchSuccess(searchResults);
-        } else {
+        // 검색어가 비어있으면 검색 실패 화면 표시
+        if (query == null || query.trim().isEmpty()) {
             showSearchFail();
+            return;
         }
+
+        // API 호출
+        searchBooksFromAPI(query.trim());
     }
 
-    private List<Book> searchBooks(String query) {
-        List<Book> results = new ArrayList<>();
-        results.add(new Book("안녕이라 그랬어", "김애란", "창비", "app/src/main/res/drawable/sayhello.jpeg"));
-        results.add(new Book("채식주의자", "한강", "창비", "app/src/main/res/drawable/sayhello.jpeg"));
-        results.add(new Book("82년생 김지영", "조남주", "민음사", "app/src/main/res/drawable/sayhello.jpeg"));
-        results.add(new Book("달러구트 꿈 백화점", "이미예", "팩토리나인", "app/src/main/res/drawable/sayhello.jpeg"));
-        results.add(new Book("트렌드 코리아 2024", "김난도", "미래의창", "app/src/main/res/drawable/sayhello.jpeg"));
-        return results;
+    private void searchBooksFromAPI(String query) {
+        // Retrofit 서비스 인스턴스 생성
+        RetrofitService service = RetrofitClient_aladin.getClient().create(RetrofitService.class);
+
+        // API 호출
+        Call<AladinResponse.AladinResponse2> call = service.getSearchBook(
+                ALADIN_API_KEY,      // ttbkey
+                query,                // Query (검색어)
+                "Keyword",              // QueryType (제목 검색)
+                10,                   // MaxResults (최대 결과 수)
+                1,                    // start (시작 페이지)
+                "Book",               // SearchTarget (도서 검색)
+                "JS",                 // output (JSON 형식)
+                "20131101"            // Version
+        );
+
+        call.enqueue(new Callback<AladinResponse.AladinResponse2>() {
+            @Override
+            public void onResponse(Call<AladinResponse.AladinResponse2> call,
+                                 Response<AladinResponse.AladinResponse2> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    AladinResponse.AladinResponse2 aladinResponse = response.body();
+                    List<AladinResponse> aladinBooks = aladinResponse.getBooks();
+
+                    if (aladinBooks != null && !aladinBooks.isEmpty()) {
+                        // AladinResponse를 Book 리스트로 변환
+                        List<Book> bookList = AladinResponse.toBookList(aladinBooks);
+                        showSearchSuccess(bookList);
+                    } else {
+                        showSearchFail();
+                    }
+                } else {
+                    Log.e(TAG, "API 응답 실패: " + response.code());
+                    showSearchFail();
+                    if (getContext() != null) {
+                        Toast.makeText(getContext(), "검색 결과를 불러오는데 실패했습니다.",
+                                     Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AladinResponse.AladinResponse2> call, Throwable t) {
+                Log.e(TAG, "API 호출 실패", t);
+                showSearchFail();
+                if (getContext() != null) {
+                    Toast.makeText(getContext(), "네트워크 오류가 발생했습니다.",
+                                 Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     private void showSearchSuccess(List<Book> results) {
