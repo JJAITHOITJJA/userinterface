@@ -8,15 +8,15 @@
     <View
         android:id="@+id/bg_profile_high"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="130dp"
         android:background="#E8F0E8"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
     <ImageView
         android:id="@+id/iv_add_record"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:src="@drawable/ic_add"
         android:padding="8dp"
         android:layout_marginTop="3dp"
@@ -25,16 +25,14 @@
         app:layout_constraintTop_toTopOf="parent"
         app:tint="@color/g6" />
 
-    <TextView
-        android:id="@+id/tv_logout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="로그아웃"
-        android:textSize="15sp"
-        android:fontFamily="@font/pretendard_medium"
-        android:textColor="@color/font_sub"
-        android:layout_marginTop="13dp"
-        android:layout_marginEnd="10dp"
+    <ImageView
+        android:id="@+id/iv_settings"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_settings"
+        android:padding="8dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="2dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
@@ -42,20 +40,21 @@
         android:id="@+id/iv_user_profile"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:src="@drawable/capibara"
+        android:src="@drawable/basic_profile"
         android:scaleType="centerCrop"
         android:adjustViewBounds="true"
         app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
+        app:strokeWidth="2dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="100dp"/>
+        android:layout_marginTop="80dp"/>
 
     <TextView
         android:id="@+id/tv_user_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="이서희"
+        android:text="부기"
         android:fontFamily="@font/pretendard_bold"
         android:textColor="@color/font_main"
         android:textSize="20sp"
@@ -88,5 +87,46 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/item_feed"/>
+
+    <FrameLayout
+        android:id="@+id/loading_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@color/white"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="32dp">
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:indeterminateTint="@color/g5" />
+
+            <TextView
+                android:id="@+id/tv_loading_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="로딩 중..."
+                android:textColor="@color/g5"
+                android:textSize="16sp"
+                android:fontFamily="@font/pretendard_bold" />
+
+        </LinearLayout>
+
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

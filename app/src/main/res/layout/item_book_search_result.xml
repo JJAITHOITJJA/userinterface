@@ -29,7 +29,7 @@
             android:id="@+id/iv_item_admin_partner_location_search_result_item_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/sayhello"/>
+            android:src="@drawable/image_ready"/>
     </androidx.cardview.widget.CardView>
 
     <View
@@ -54,19 +54,23 @@
             android:id="@+id/tv_book_search_result_item_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="안녕이라 그랬어"
+            android:text="제목"
             android:textSize="17sp"
             android:fontFamily="@font/pretendard_medium"
-            android:textColor="@color/font_main"/>
+            android:textColor="@color/font_main"
+            android:maxLines="2"
+            android:ellipsize="end"/>
 
         <TextView
             android:id="@+id/tv_book_search_result_item_author"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="김애란 / 창비"
+            android:text="작가 / 출판사"
             android:textSize="13sp"
             android:fontFamily="@font/pretendard_medium"
-            android:textColor="@color/font_sub"/>
+            android:textColor="@color/font_sub"
+            android:maxLines="2"
+            android:ellipsize="end"/>
 
     </LinearLayout>
 
