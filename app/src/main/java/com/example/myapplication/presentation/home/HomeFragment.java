@@ -29,6 +29,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.prolificinteractive.materialcalendarview.CalendarDay;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -344,15 +346,28 @@ public class HomeFragment extends Fragment {
                             String category = document.getString("category");
                             String status = document.getString("status");
                             Boolean isPublic = document.getBoolean("isPublic");
-                            String lastRecordDate = document.getString("lastRecordDate");
-
+                            com.prolificinteractive.materialcalendarview.CalendarDay calendarDay = null;
+                            String lastRecordDateStr = document.getString("lastRecordDate");
+                            if (lastRecordDateStr != null && !lastRecordDateStr.isEmpty()) {
+                                try {
+                                    String[] dateParts = lastRecordDateStr.split("-");
+                                    if (dateParts.length == 3) {
+                                        int year = Integer.parseInt(dateParts[0]);
+                                        int month = Integer.parseInt(dateParts[1]);
+                                        int day = Integer.parseInt(dateParts[2]);
+                                        calendarDay = com.prolificinteractive.materialcalendarview.CalendarDay.from(year, month, day);
+                                    }
+                                } catch (Exception e) {
+                                    Log.e(TAG, "날짜 파싱 오류: " + lastRecordDateStr, e);
+                                }
+                            }
                             // FeedItem 생성
                             FeedItem feedItem = new FeedItem(
                                     isbn != null ? isbn : document.getId(),
                                     title != null ? title : "제목 없음",
                                     author != null ? author : "저자 미상",
                                     coverUrl != null ? coverUrl : "",
-                                    lastRecordDate != null ? lastRecordDate : "",
+                                    calendarDay,
                                     0, // rating - book에는 없으므로 기본값
                                     0, // startPage
                                     0, // endPage

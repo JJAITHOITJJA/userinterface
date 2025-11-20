@@ -18,7 +18,6 @@ import com.example.myapplication.presentation.calendar.BookRecordAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class BookListFragment extends Fragment {
@@ -42,13 +41,15 @@ public class BookListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ((MainActivity) requireActivity()).hideBottom();
 
-        setupBackButton();
+        setupCalendarButton();  // 달력 버튼 설정
         setupRecyclerViews();
         loadAllRecords();
     }
 
-    private void setupBackButton() {
-        binding.ivBackList.setOnClickListener(v -> {
+    // 달력 버튼 설정
+    private void setupCalendarButton() {
+        binding.ivCalendarIconList.setOnClickListener(v -> {
+            // CalendarFragment로 돌아가기
             if (getActivity() != null) {
                 getActivity().onBackPressed();
             }
@@ -68,7 +69,6 @@ public class BookListFragment extends Fragment {
     }
 
     private void loadAllRecords() {
-        // CalendarFragment로부터 데이터 받기 (Bundle)
         if (getArguments() != null) {
             allBookRecords = getArguments().getParcelableArrayList("all_records");
             if (allBookRecords != null) {
@@ -100,7 +100,6 @@ public class BookListFragment extends Fragment {
             return b.getDate().getDate().compareTo(a.getDate().getDate());
         });
 
-        // UI 업데이트
         updateReadingSection(readingBooks);
         updateFinishedSection(finishedBooks);
     }

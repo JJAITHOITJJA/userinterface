@@ -25,22 +25,21 @@
                 android:id="@+id/ivBackList"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_back"
-                android:contentDescription="뒤로가기" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="읽는 중"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/black"
-                android:gravity="center" />
+                android:src="@drawable/ic_arrow_back"
+                android:contentDescription="뒤로가기"
+                android:visibility="gone" />
 
             <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:id="@+id/ivCalendarIconList"
                 android:layout_width="24dp"
-                android:layout_height="24dp" />
+                android:layout_height="24dp"
+                android:src="@drawable/ic_calendar"
+                android:contentDescription="달력으로 이동" />
         </LinearLayout>
 
         <!-- 읽는 중 섹션 -->

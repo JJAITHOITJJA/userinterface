@@ -25,17 +25,17 @@
             android:src="@drawable/ic_menu_calendar"
             android:contentDescription="메뉴" />
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1" />
+<!--        <View-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="1dp"-->
+<!--            android:layout_weight="1" />-->
 
-        <ImageView
-            android:id="@+id/ivCalendarIcon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_calendar"
-            android:contentDescription="달력" />
+<!--        <ImageView-->
+<!--            android:id="@+id/ivCalendarIcon"-->
+<!--            android:layout_width="24dp"-->
+<!--            android:layout_height="24dp"-->
+<!--            android:src="@drawable/ic_calendar"-->
+<!--            android:contentDescription="달력" />-->
     </LinearLayout>
 
     <!-- 스크롤 가능한 영역 -->
