@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginHorizontal="12dp"
+    android:layout_marginTop="10dp"
+    android:background="@drawable/bg_record_review"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingVertical="10dp"
+    android:maxHeight="300dp">
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/comment_owner_profile_img"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:src="@drawable/capibara"
+        android:layout_marginStart="10dp"
+        app:civ_border_width="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/item_comment_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="username"
+        android:fontFamily="@font/pretendard_semibold"
+        android:textSize="15sp"
+        android:textColor="@color/font_main"
+        app:layout_constraintTop_toTopOf="@id/comment_owner_profile_img"
+        app:layout_constraintBottom_toBottomOf="@id/comment_owner_profile_img"
+        app:layout_constraintStart_toEndOf="@id/comment_owner_profile_img"
+        android:layout_marginStart="15dp"/>
+
+    <TextView
+        android:id="@+id/item_comment_page"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="159"
+        android:textSize="15sp"
+        app:layout_constraintStart_toEndOf="@id/item_comment_username"
+        app:layout_constraintBottom_toBottomOf="@id/item_comment_username"
+        android:layout_marginStart="10dp"/>
+
+    <TextView
+        android:id="@+id/tv_comment_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2025.10.12 16:49PM"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="15dp"
+        app:layout_constraintBottom_toBottomOf="@id/item_comment_username"/>
+
+    <TextView
+        android:id="@+id/tv_comment_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="정말 인상깊었따네여"
+        android:textColor="@color/font_sub"
+        android:maxLines="6"
+        app:layout_constraintTop_toBottomOf="@id/comment_owner_profile_img"
+        app:layout_constraintStart_toStartOf="@id/comment_owner_profile_img"
+        android:layout_marginTop="9dp"/>
+
+    <TextView
+        android:id="@+id/btn_recomment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="대댓글"
+        android:padding="10dp"
+        android:layout_marginEnd="5dp"
+        app:layout_constraintEnd_toStartOf="@id/tv_comment_date"
+        app:layout_constraintTop_toTopOf="@id/tv_comment_date"
+        app:layout_constraintBottom_toBottomOf="@id/tv_comment_date"/>
+
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

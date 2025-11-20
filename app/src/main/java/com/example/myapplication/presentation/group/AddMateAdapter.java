@@ -11,7 +11,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.view.View;
 
+import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
+import com.example.myapplication.data.OnItemClickListener;
 import com.example.myapplication.data.group.GroupItem;
 import com.example.myapplication.data.onmate.AddMateItem;
 
@@ -19,9 +21,16 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class AddMateAdapter extends ListAdapter<AddMateItem, AddMateAdapter.MateHorizontalViewHolder>   {
 
+    private OnItemClickListener<AddMateItem> listener= null;
+
     private boolean isDeleteMode = false;
     public AddMateAdapter() {
         super(new AddMateAdapter.AddMateItemDiffCallback());
+    }
+
+    public AddMateAdapter(OnItemClickListener<AddMateItem> listener) {
+        super(new AddMateAdapter.AddMateItemDiffCallback());
+        this.listener = listener;
     }
     @NonNull
     @Override
@@ -35,6 +44,12 @@ public class AddMateAdapter extends ListAdapter<AddMateItem, AddMateAdapter.Mate
     public void onBindViewHolder(@NonNull MateHorizontalViewHolder holder, int position) {
         AddMateItem item = getItem(position);
         holder.bind(item, isDeleteMode);
+
+        holder.itemView.setOnClickListener(v-> {
+            if(listener != null && holder.getAdapterPosition() != RecyclerView.NO_POSITION){
+                listener.onItemClick(getItem(holder.getAdapterPosition()), holder.getAdapterPosition());
+            }
+        });
 
     }
     public void setDeleteMode(boolean isDeleteMode) {
@@ -63,13 +78,23 @@ public class AddMateAdapter extends ListAdapter<AddMateItem, AddMateAdapter.Mate
         }
 
         public void bind(AddMateItem item, boolean isDeleteMode) {
-            profileImage.setImageResource(item.getProfileImageUrl());
             name.setText(item.getName());
+
+            String imageUrl = item.getProfileImageUrl();
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+                Glide.with(itemView.getContext())
+                        .load(imageUrl)
+                        .placeholder(R.drawable.capibara)
+                        .error(R.drawable.capibara)
+                        .circleCrop()
+                        .into(profileImage);
+            } else {
+                profileImage.setImageResource(R.drawable.capibara);
+            }
 
             if(isDeleteMode){
                 itemView.findViewById(R.id.btn_delete_mate).setVisibility(View.VISIBLE);
             }
-
 
         }
 

@@ -9,7 +9,6 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintHeight_percent="0.0914"
-        app:layout_constraintBottom_toTopOf="@id/view_search_bg"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
     
@@ -55,6 +54,7 @@
         android:layout_height="wrap_content"
         android:hint="찾고 싶은 책을 검색하세요!"
         android:background="@android:color/transparent"
+        android:inputType="text"
         app:layout_constraintTop_toTopOf="@id/view_search_bar"
         app:layout_constraintStart_toEndOf="@id/iv_search_ic"
         app:layout_constraintBottom_toBottomOf="@id/view_search_bar"
@@ -63,7 +63,7 @@
         android:textColorHint="@color/font_sub"
         android:textSize="13sp"
         android:fontFamily="@font/pretendard_regular"
-        android:imeOptions="actionDone"
+        android:imeOptions="actionSearch"
         android:singleLine="true"/>
 
     <ImageView

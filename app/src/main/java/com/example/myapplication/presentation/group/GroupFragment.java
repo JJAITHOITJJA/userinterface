@@ -54,20 +54,25 @@ public class GroupFragment extends Fragment {
     }
 
 
-    // binding.button.setOnClickListener 같은 작업 여기서 처리할 것
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         navController = NavHostFragment.findNavController(this);
 
-        binding.flGroupList.setVisibility(View.GONE);
-        binding.loadingOverlay.setVisibility(View.VISIBLE);
-
         initAdapter();
+
         binding.fabAdd.setOnClickListener(v -> {
             navController.navigate(R.id.action_groupFragment_to_groupSearchFragment);
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        binding.flGroupList.setVisibility(View.GONE);
+        binding.loadingOverlay.setVisibility(View.VISIBLE);
+        loadGroupData();
     }
 
     @Override
@@ -80,7 +85,7 @@ public class GroupFragment extends Fragment {
         adapter = new GroupAdapter(new OnItemClickListener<GroupItem>() {
             @Override
             public void onItemClick(GroupItem item, int position) {
-                String groupId = item.getGroupId(); // GroupItem에 getGroupId()가 있다고 가정
+                String groupId = item.getGroupId();
 
                 Bundle bundle = new Bundle();
                 bundle.putString("groupId", groupId);
@@ -89,7 +94,6 @@ public class GroupFragment extends Fragment {
         });
         binding.rvMygroupList.setAdapter(adapter);
         binding.rvMygroupList.setLayoutManager(new LinearLayoutManager(getContext()));
-        loadGroupData();
     }
 
     private void loadGroupData(){
@@ -112,9 +116,10 @@ public class GroupFragment extends Fragment {
                         binding.loadingOverlay.setVisibility(View.GONE);
                     } else {
                         Log.e("GroupFragment", "Error getting documents: ", task.getException());
-                        // 에러 처리 로직
                         Toast.makeText(getContext(), "그룹 목록을 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
                         adapter.submitList(Collections.emptyList());
+                        binding.flGroupList.setVisibility(View.VISIBLE);
+                        binding.loadingOverlay.setVisibility(View.GONE);
                     }
                 });
 

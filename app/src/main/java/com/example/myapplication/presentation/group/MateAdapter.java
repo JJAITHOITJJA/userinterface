@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.data.group.GroupItem;
 import com.example.myapplication.data.onmate.MateItem;
@@ -49,7 +50,17 @@ public class MateAdapter extends ListAdapter<MateItem, MateAdapter.MateViewHolde
         }
 
         public void bind(MateItem item) {
-            thumbnail.setImageResource(R.drawable.capibara);
+            String imageUrl = item.getProfileImageUrl();
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+                Glide.with(itemView.getContext())
+                        .load(imageUrl)
+                        .placeholder(R.drawable.capibara)
+                        .error(R.drawable.capibara)
+                        .circleCrop()
+                        .into(thumbnail);
+            } else {
+                thumbnail.setImageResource(R.drawable.capibara);
+            }
             name.setText(item.getName());
             id.setText(item.getId());
 

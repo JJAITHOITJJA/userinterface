@@ -22,6 +22,7 @@ import androidx.navigation.NavController;
 import com.example.myapplication.R;
 import com.example.myapplication.data.home.FeedItem;
 import com.example.myapplication.databinding.FragmentCalendarBinding;
+import com.example.myapplication.presentation.record.BookListFragment;
 import com.example.myapplication.presentation.record.RecordDetailFragment;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;
@@ -69,6 +70,7 @@ public class CalendarFragment extends Fragment {
         setupRecyclerView();
         setupButtonListeners();
         setupFilterButtons(); // 필터 버튼 추가
+        setupMenuButton();
         loadAllBookRecords();
         CalendarDay today = CalendarDay.today();
         calendarView.setSelectedDate(today);
@@ -88,6 +90,21 @@ public class CalendarFragment extends Fragment {
         );
     }
 
+    private void setupMenuButton() {
+        binding.ivMenuCalendar.setOnClickListener(v -> navigateToBookList());
+    }
+    private void navigateToBookList() {
+        BookListFragment listFragment = new BookListFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList("all_records", new ArrayList<>(allBookRecords));
+        listFragment.setArguments(bundle);
+
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.nav_host_fragment_container, listFragment)
+                .addToBackStack(null)
+                .commit();
+    }
     private void setupCalendar() {
         calendarView = binding.calendarView;
         calendarView.setSelectionMode(MaterialCalendarView.SELECTION_MODE_SINGLE);
