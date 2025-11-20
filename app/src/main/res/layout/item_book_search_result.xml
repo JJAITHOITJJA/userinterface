@@ -57,7 +57,9 @@
             android:text="안녕이라 그랬어"
             android:textSize="17sp"
             android:fontFamily="@font/pretendard_medium"
-            android:textColor="@color/font_main"/>
+            android:textColor="@color/font_main"
+            android:maxLines="2"
+            android:ellipsize="end"/>
 
         <TextView
             android:id="@+id/tv_book_search_result_item_author"
@@ -66,7 +68,9 @@
             android:text="김애란 / 창비"
             android:textSize="13sp"
             android:fontFamily="@font/pretendard_medium"
-            android:textColor="@color/font_sub"/>
+            android:textColor="@color/font_sub"
+            android:maxLines="2"
+            android:ellipsize="end"/>
 
     </LinearLayout>
 
