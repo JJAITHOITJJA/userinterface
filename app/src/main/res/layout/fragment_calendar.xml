@@ -34,7 +34,65 @@
                 app:mcv_headerTextAppearance="@style/CalendarHeaderText"
                 app:mcv_leftArrow="@drawable/calendarleft"
                 app:mcv_rightArrow="@drawable/calendarright"
-                app:mcv_selectionMode="multiple" />
+                app:mcv_selectionMode="single" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 필터 버튼 추가 -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/filterCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:visibility="gone"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#E0E0E0">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="12dp"
+                android:gravity="center">
+
+                <Button
+                    android:id="@+id/btnFilterAll"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:text="전체"
+                    android:textSize="13sp"
+                    app:strokeColor="#5D8C61"
+                    app:strokeWidth="2dp" />
+
+                <Button
+                    android:id="@+id/btnFilterReading"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:text="읽는 중"
+                    android:textSize="13sp"
+                    app:strokeColor="#5D8C61"
+                    app:strokeWidth="2dp" />
+
+                <Button
+                    android:id="@+id/btnFilterFinished"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:text="완독"
+                    android:textSize="13sp"
+                    app:strokeColor="#5D8C61"
+                    app:strokeWidth="2dp" />
+            </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView

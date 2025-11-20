@@ -3,13 +3,15 @@ package com.example.myapplication.data.home;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.prolificinteractive.materialcalendarview.CalendarDay;
+
 public class FeedItem implements Parcelable{
     private String id;
     private String title;
     private String author;
     private int coverImage; // drawable resource id
     private String coverImageUrl; // URL for Glide
-    private String date;
+    private CalendarDay date;
     private int rating; // 1-5 stars
     private int startPage;
     private int endPage;
@@ -26,7 +28,7 @@ public class FeedItem implements Parcelable{
     }
 
     public FeedItem(String id, String title, String author, String coverImageUrl,
-                    String date, int rating, int startPage, int endPage,
+                    CalendarDay date, int rating, int startPage, int endPage,
                     String review, String status, String category, boolean isPrivate) {
         this.id = id;
         this.title = title;
@@ -48,7 +50,14 @@ public class FeedItem implements Parcelable{
         author = in.readString();
         coverImage = in.readInt();
         coverImageUrl = in.readString();
-        date = in.readString();
+        if (in.readByte() == 1) {
+            int year = in.readInt();
+            int month = in.readInt();
+            int day = in.readInt();
+            this.date = CalendarDay.from(year, month, day);
+        } else { //nullpointexception 때문에 넣음
+            this.date = null;
+        }
         rating = in.readInt();
         startPage = in.readInt();
         endPage = in.readInt();
@@ -76,7 +85,7 @@ public class FeedItem implements Parcelable{
     public String getAuthor() { return author; }
     public int getCoverImage() { return coverImage; }
     public String getCoverImageUrl() { return coverImageUrl; }
-    public String getDate() { return date; }
+    public CalendarDay getDate() { return date; }
     public int getRating() { return rating; }
     public int getStartPage() { return startPage; }
     public int getEndPage() { return endPage; }
@@ -91,7 +100,7 @@ public class FeedItem implements Parcelable{
     public void setAuthor(String author) { this.author = author; }
     public void setCoverImage(int coverImage) { this.coverImage = coverImage; }
     public void setCoverImageUrl(String coverImageUrl) { this.coverImageUrl = coverImageUrl; }
-    public void setDate(String date) { this.date = date; }
+    public void setDate(CalendarDay date) { this.date = date; }
     public void setRating(int rating) { this.rating = rating; }
     public void setStartPage(int startPage) { this.startPage = startPage; }
     public void setEndPage(int endPage) { this.endPage = endPage; }
@@ -112,7 +121,15 @@ public class FeedItem implements Parcelable{
         dest.writeString(author);
         dest.writeInt(coverImage);
         dest.writeString(coverImageUrl);
-        dest.writeString(date);
+        if (date == null) {
+            dest.writeByte((byte) 0); // 0을 써서 'null'이라고 표시
+        } else {
+            dest.writeByte((byte) 1); // 1을 써서 '데이터 있음'이라고 표시
+            // 2. 데이터가 있을 때만 연, 월, 일을 씀
+            dest.writeInt(date.getYear());
+            dest.writeInt(date.getMonth());
+            dest.writeInt(date.getDay());
+        }
         dest.writeInt(rating);
         dest.writeInt(startPage);
         dest.writeInt(endPage);

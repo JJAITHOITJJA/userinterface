@@ -9,16 +9,24 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myapplication.R; // 본인 R 패키지
-import com.example.myapplication.data.calendar.BookRecord;
+import com.bumptech.glide.Glide;
+import com.example.myapplication.R;
+import com.example.myapplication.data.home.FeedItem;
 
 import java.util.List;
 
 public class BookRecordAdapter extends RecyclerView.Adapter<BookRecordAdapter.BookViewHolder> {
-    private final List<BookRecord> bookRecordList;
+    private List<FeedItem> displayList;
+    private OnItemClickListener listener;
 
-    public BookRecordAdapter(List<BookRecord> bookRecordList) {
-        this.bookRecordList = bookRecordList;
+    // 클릭 리스너 인터페이스
+    public interface OnItemClickListener {
+        void onItemClick(FeedItem item);
+    }
+
+    public BookRecordAdapter(List<FeedItem> displayList, OnItemClickListener listener) {
+        this.displayList = displayList;
+        this.listener = listener;
     }
 
     public static class BookViewHolder extends RecyclerView.ViewHolder {
@@ -34,12 +42,31 @@ public class BookRecordAdapter extends RecyclerView.Adapter<BookRecordAdapter.Bo
             tvBookQuote = itemView.findViewById(R.id.tvBookQuote);
         }
 
-        public void bind(BookRecord record) {
+        public void bind(FeedItem record, OnItemClickListener listener) {
             tvBookTitle.setText(record.getTitle());
             tvBookAuthor.setText(record.getAuthor());
-            tvBookPage.setText(record.getPage());
-            tvBookQuote.setText(record.getQuote());
-            ivBookCover.setImageResource(record.getBookCoverImageRes());
+
+            String pageInfo = record.getStartPage() + " ~ " + record.getEndPage();
+            tvBookPage.setText(pageInfo);
+
+            tvBookQuote.setText(record.getReview());
+
+            if (record.getCoverImageUrl() != null && !record.getCoverImageUrl().isEmpty()) {
+                Glide.with(ivBookCover.getContext())
+                        .load(record.getCoverImageUrl())
+                        .placeholder(R.drawable.ic_book_placeholder)
+                        .error(R.drawable.ic_book_error)
+                        .into(ivBookCover);
+            } else if (record.getCoverImage() != 0) {
+                ivBookCover.setImageResource(record.getCoverImage());
+            }
+
+            // 아이템 클릭 리스너
+            itemView.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onItemClick(record);
+                }
+            });
         }
     }
 
@@ -53,16 +80,16 @@ public class BookRecordAdapter extends RecyclerView.Adapter<BookRecordAdapter.Bo
 
     @Override
     public void onBindViewHolder(@NonNull BookViewHolder holder, int position) {
-        holder.bind(bookRecordList.get(position));
+        holder.bind(displayList.get(position), listener);
     }
 
     @Override
     public int getItemCount() {
-        return (bookRecordList != null) ? bookRecordList.size() : 0;
+        return (displayList != null) ? displayList.size() : 0;
     }
 
-    public void addItem(BookRecord record) {
-        bookRecordList.add(record);
-        notifyItemInserted(bookRecordList.size() - 1);
+    public void addItem(FeedItem record) {
+        displayList.add(record);
+        notifyItemInserted(displayList.size() - 1);
     }
 }

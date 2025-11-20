@@ -31,7 +31,11 @@
         android:id="@+id/recordDestination"
         android:name="com.example.myapplication.presentation.record.RecordContainerFragment"
         android:label="record"
-        tools:layout="@layout/fragment_record_container" />
+        tools:layout="@layout/fragment_record_container" >
+    <action
+        android:id="@+id/action_recordContainer_to_recordCreate"
+        app:destination="@id/recordCreateFragment" />
+    </fragment>
 
 
 
