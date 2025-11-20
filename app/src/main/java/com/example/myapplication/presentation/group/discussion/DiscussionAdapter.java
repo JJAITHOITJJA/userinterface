@@ -1,4 +1,4 @@
-package com.example.myapplication.presentation.group;
+package com.example.myapplication.presentation.group.discussion;
 
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.data.OnItemClickListener;
 import com.example.myapplication.data.group.DiscussionItem;
-import com.example.myapplication.data.onmate.MateItem;
 
 import org.jspecify.annotations.NonNull;
 

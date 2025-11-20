@@ -1,7 +1,9 @@
 package com.example.myapplication.presentation.group;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,9 +11,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
+import androidx.core.graphics.Insets;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -22,6 +26,7 @@ import com.example.myapplication.data.group.DiscussionItem;
 import com.example.myapplication.data.onmate.AddMateItem;
 import com.example.myapplication.databinding.FragmentGroupInsideBinding;
 import com.example.myapplication.presentation.MainActivity;
+import com.example.myapplication.presentation.group.discussion.DiscussionAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -73,6 +78,23 @@ public class GroupInsideFragment extends Fragment {
             return;
         }
 
+        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            Insets navigationBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
+
+            int extraPaddingTop = 3;
+
+            // 하단 패딩을 navigationBars.bottom으로 설정하여 네비게이션 바 위로 올림
+            v.setPadding(
+                    systemBars.left,
+                    systemBars.top + dpToPx(v.getContext(), extraPaddingTop),
+                    systemBars.right,
+                    navigationBars.bottom  // 시스템 네비게이션 바 높이만큼 패딩
+            );
+            v.post(() -> ((MainActivity) requireActivity()).hideBottom());
+            return insets;
+        });
+
 
         initMemberAdapter();
         initDiscussionAdapter();
@@ -86,7 +108,9 @@ public class GroupInsideFragment extends Fragment {
         });
 
         binding.fabDiscussionCreate.setOnClickListener(v->{
-            navController.navigate(R.id.action_groupInsideFragment_to_groupDiscussionCreateFragment);
+            Bundle bundle1= new Bundle();
+            bundle1.putString("groupId", groupId);
+            navController.navigate(R.id.action_groupInsideFragment_to_groupDiscussionCreateFragment, bundle1);
         });
 
         binding.ivGroupEdit.setOnClickListener(v->
@@ -95,6 +119,16 @@ public class GroupInsideFragment extends Fragment {
 
 
 
+    }
+
+    private int dpToPx(Context context, int dp) {
+        return Math.round(
+                TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP,
+                        dp,
+                        context.getResources().getDisplayMetrics()
+                )
+        );
     }
 
     @Override
@@ -183,12 +217,13 @@ public class GroupInsideFragment extends Fragment {
                                 String bookName = document.getString("bookName");
                                 String author = document.getString("author");
                                 String topic = document.getString("topic");
+                                String bookCover = document.getString("bookCover");
 
                                 DiscussionItem item = new DiscussionItem(
                                         discussionId,
                                         bookName,
                                         author,
-                                        "",
+                                        bookCover,
                                         topic,
                                         FieldValue.serverTimestamp().toString()
                                 );
@@ -196,7 +231,9 @@ public class GroupInsideFragment extends Fragment {
                                 Log.d("GroupInsideFragment", "현재 로드된 토론 항목 개수: " + discussionItems.size());
 
                                 if(discussionItems.size() == discussionIds.size()){
-                                    Log.d("GroupInsideFragment", "모든 토론 문서 로드 완료. 어댑터 업데이트.");
+                                    discussionItems.sort(DiscussionItem::compareTo);
+                                    db.collection("group").document(groupId)
+                                            .update("thumbnailUrl", discussionItems.get(0).getBookImageUrl());
                                     discussionAdapter.submitList(new ArrayList<>(discussionItems));
                                 }
                             } else {

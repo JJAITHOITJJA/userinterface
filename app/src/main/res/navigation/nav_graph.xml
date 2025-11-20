@@ -86,7 +86,11 @@
     <fragment
         android:id="@+id/DiscussionCreateFragment"
         android:name="com.example.myapplication.presentation.group.discussion.DiscussionCreateFragment"
-        android:label="그룹 토론 만들기 화면"/>
+        android:label="그룹 토론 만들기 화면">
+        <action
+            android:id="@+id/action_discussionCreateFragment_to_bookSearchFragment"
+            app:destination="@id/bookSearchFragment"/>
+    </fragment>
 
 <!--    홈 관련 프래그먼트-->
 

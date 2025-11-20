@@ -1,6 +1,6 @@
 package com.example.myapplication.data.group;
 
-public class DiscussionItem {
+public class DiscussionItem implements Comparable<DiscussionItem> {
     private String discussionId;
     private String bookName;
     private String author;
@@ -68,4 +68,10 @@ public class DiscussionItem {
     public String getStartDate(){
         return startDate;
     }
+
+    @Override
+    public int compareTo(DiscussionItem other) {
+        return other.startDate.compareTo(startDate);
+    }
+
 }
