@@ -13,9 +13,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 
-import com.example.myapplication.R;
 import com.example.myapplication.data.OnItemClickListener;
 import com.example.myapplication.data.onmate.AddMateItem;
 import com.example.myapplication.data.onmate.MateItem;
@@ -31,9 +34,9 @@ import java.util.List;
 
 public class MateSearchFragment extends Fragment {
 
-
     private FragmentSearchMateBinding binding;
     private AddMateViewModel viewModel;
+    private NavController navController;
     private MateSearchAdapter searchAdapter;
 
     private AddMateAdapter addedAdapter;
@@ -47,11 +50,12 @@ public class MateSearchFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        db= FirebaseFirestore.getInstance();
+        db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
-        initAddedMateListAdapter();
-        initSearchListAdapter();
+
+        // ViewModel 초기화 (중요!)
+        viewModel = new ViewModelProvider(requireActivity()).get(AddMateViewModel.class);
 
     }
 
@@ -69,12 +73,19 @@ public class MateSearchFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        navController = NavHostFragment.findNavController(this);
+
+        // Adapter 초기화를 onViewCreated에서 (binding이 준비된 후)
+        initSearchListAdapter();
+        initAddedMateListAdapter();
         observeAddedMates();
 
         binding.etOnmateSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
-                if(actionId == EditorInfo.IME_ACTION_DONE || actionId== EditorInfo.IME_ACTION_SEARCH){
+                if(actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEARCH||
+                        actionId == EditorInfo.IME_ACTION_GO||(keyEvent.getAction() == KeyEvent.ACTION_DOWN &&
+                        keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER)){
                     String keyword = binding.etOnmateSearch.getText().toString().trim();
 
                     if(!keyword.isEmpty())
@@ -85,7 +96,13 @@ public class MateSearchFragment extends Fragment {
             }
         });
 
+        binding.ivBackCreateGroupBtn.setOnClickListener(v-> {
+            navController.popBackStack();
+        });
 
+        binding.tvReturnToCreateBtn.setOnClickListener(v->
+                navController.popBackStack()
+        );
     }
 
     @Override
@@ -99,40 +116,95 @@ public class MateSearchFragment extends Fragment {
         searchAdapter.setOnItemClickListener(new OnItemClickListener<MateItem>() {
             @Override
             public void onItemClick(MateItem item, int position) {
-                viewModel.addMateToSelection(toAddMateItem(item));
+                if(viewModel != null) {
+                    viewModel.addMateToSelection(toAddMateItem(item));
+                }
             }
         });
+
+        if(binding != null && binding.rvSearchList != null) {
+            binding.rvSearchList.setAdapter(searchAdapter);
+        }
+
+        binding.rvAddedMate.setLayoutManager(
+                new LinearLayoutManager(getContext())
+        );
+
+        binding.rvSearchList.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.rvSearchList.setAdapter(searchAdapter);
     }
 
     private AddMateItem toAddMateItem(MateItem item){
-        return new AddMateItem(item.getName(), item.getUId(), R.drawable.capibara); // TODO : 나중에 이미지 불러오는 api 만들어지면 그때 수정
+        return new AddMateItem(item.getName(), item.getUId(), item.getProfileImageUrl());
     }
 
     private void initAddedMateListAdapter(){
-        addedAdapter = new AddMateAdapter();
-        binding.rvAddedMate.setAdapter(addedAdapter);
+        addedAdapter = new AddMateAdapter(
+                new OnItemClickListener<AddMateItem>() {
+                    @Override
+                    public void onItemClick(AddMateItem item, int position) {
+                        viewModel.removeMateFromSelection(item);
+                    }
+                }
+        );
+        String myId= auth.getCurrentUser().getUid();
+        db.collection("users").document(myId).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            String nickname = document.getString("nickname");
+                            String profileImageUrl = document.getString("profileImageUrl");
+                            AddMateItem myMate = new AddMateItem(nickname, myId, profileImageUrl);
+                            viewModel.addMateToSelection(myMate);
+                        }
+                    }
+                });
+        addedAdapter.submitList(viewModel.addedMates.getValue());
+
+        addedAdapter.setDeleteMode(true); // 삭제 모드 설정
+
+        if(binding != null && binding.rvAddedMate != null) {
+            binding.rvAddedMate.setAdapter(addedAdapter);
+        }
+
+        binding.rvAddedMate.setLayoutManager(
+                new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false)
+        );
     }
 
     private void observeAddedMates() {
-        viewModel.addedMates.observe(getViewLifecycleOwner(), new Observer<List<AddMateItem>>() {
-            @Override
-            public void onChanged(List<AddMateItem> newMates) {
-                addedAdapter.submitList(newMates);
-                binding.rvAddedMate.scrollToPosition(newMates.size() - 1);
-            }
-        });
+        if(viewModel != null) {
+            viewModel.addedMates.observe(getViewLifecycleOwner(), new Observer<List<AddMateItem>>() {
+                @Override
+                public void onChanged(List<AddMateItem> newMates) {
+                    if(newMates != null && !newMates.isEmpty()) {
+                        addedAdapter.submitList(newMates);
+
+                        if(binding != null && binding.rvAddedMate != null) {
+                            binding.rvAddedMate.scrollToPosition(newMates.size() - 1);
+                        }
+                    } else {
+                        addedAdapter.submitList(new ArrayList<>());
+                    }
+                }
+            });
+        }
     }
 
     private void searchUser(String keyword){
-        db.collection("users").whereEqualTo("nickname",keyword)
+        db.collection("users").whereEqualTo("nickname", keyword)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if(binding == null) return; // Fragment가 파괴된 경우 방지
 
                     List<MateItem> searchResultList = new ArrayList<>();
-                    binding.tvOnmateSearch.setVisibility(View.VISIBLE);
 
-                    if( !queryDocumentSnapshots.isEmpty()){
+                    if(binding.tvOnmateSearch != null) {
+                        binding.tvOnmateSearch.setVisibility(View.VISIBLE);
+                    }
+
+                    if(!queryDocumentSnapshots.isEmpty()){
                         for(DocumentSnapshot document : queryDocumentSnapshots){
                             String name = document.getString("nickname");
                             String id = document.getString("email");
@@ -142,21 +214,21 @@ public class MateSearchFragment extends Fragment {
 
                             searchResultList.add(item);
                         }
-                        binding.rvSearchList.setVisibility(View.VISIBLE);
+
+                        if(binding.rvSearchList != null) {
+                            binding.rvSearchList.setVisibility(View.VISIBLE);
+                        }
                         searchAdapter.submitList(searchResultList);
 
-
-                    } else{
-                        binding.rvSearchList.setVisibility(View.GONE);
+                    } else {
+                        if(binding.rvSearchList != null) {
+                            binding.rvSearchList.setVisibility(View.GONE);
+                        }
                         searchAdapter.submitList(Collections.emptyList());
-
                     }
                 })
-
                 .addOnFailureListener(e -> {
-                    Log.w("error", "에휴..검색결과를 불러오는 데 실패하엿노라..");
+                    Log.w("MateSearchFragment", "검색 실패: " + e.getMessage());
                 });
-
-
     }
 }

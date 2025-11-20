@@ -5,14 +5,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tool="http://schemas.android.com/tools">
 
-    <TextView
-        android:id="@+id/tv_search_group_title"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+    <ImageView
+        android:id="@+id/btn_back_my_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="22dp"
-        android:layout_marginStart="21dp"
+        android:src="@drawable/ic_arrow_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="17dp"
+        android:padding="10dp"/>
+
+    <TextView
+        android:id="@+id/tv_search_group_title"
+        app:layout_constraintStart_toEndOf="@id/btn_back_my_group"
+        app:layout_constraintTop_toTopOf="@id/btn_back_my_group"
+        app:layout_constraintBottom_toBottomOf="@id/btn_back_my_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
         android:text="그룹 찾기"
         android:includeFontPadding="false"
         android:textSize="20sp"
@@ -52,12 +63,14 @@
         app:layout_constraintStart_toEndOf="@id/iv_search_icon"
         app:layout_constraintTop_toTopOf="@id/iv_search_icon"
         app:layout_constraintBottom_toBottomOf="@id/iv_search_icon"
-        android:maxLines="1"/>
+        android:maxLines="1"
+        android:singleLine="true"/>
 
     <CheckBox
         android:id="@+id/cb_search_literature"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:checked="true"
         android:backgroundTint="@android:color/transparent"
         android:button="@drawable/category_check_selector"
         android:paddingStart="8dp"
@@ -83,6 +96,7 @@
         app:layout_constraintStart_toEndOf="@id/cb_search_literature"
         app:layout_constraintTop_toBottomOf="@id/iv_group_search_box" />
 
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_search_list"
         android:layout_marginTop="6dp"
@@ -92,6 +106,47 @@
         app:layout_constraintTop_toBottomOf="@id/cb_search_literature"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
+
+    <FrameLayout
+        android:id="@+id/loading_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cb_search_literature"
+        android:background="@color/white"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="32dp">
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:indeterminateTint="@color/g5" />
+
+            <TextView
+                android:id="@+id/tv_loading_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="로딩 중..."
+                android:textColor="@color/g5"
+                android:textSize="16sp"
+                android:fontFamily="@font/pretendard_bold" />
+
+        </LinearLayout>
+
+    </FrameLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_group_create"
