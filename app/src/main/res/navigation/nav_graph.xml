@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/homeFragment">
 
@@ -30,9 +31,15 @@
     </fragment>
 
     <fragment
-        android:id="@+id/calendarFragment"
-        android:name="com.example.myapplication.presentation.calendar.CalendarFragment"
-        android:label="My Page"/>
+        android:id="@+id/recordDestination"
+        android:name="com.example.myapplication.presentation.record.RecordContainerFragment"
+        android:label="record"
+        tools:layout="@layout/fragment_record_container" >
+    <action
+        android:id="@+id/action_recordContainer_to_recordCreate"
+        app:destination="@id/recordCreateFragment" />
+    </fragment>
+
 
 
 <!--    그룹 관련 프래그먼트-->
@@ -40,7 +47,11 @@
     <fragment
         android:id="@+id/groupSearchFragment"
         android:name="com.example.myapplication.presentation.group.GroupSearchFragment"
-        android:label="group search"/>
+        android:label="group search">
+        <action
+            android:id="@+id/action_groupSearchFragment_to_groupCreateFragment"
+            app:destination="@id/groupCreateFragment"/>
+    </fragment>
 
     <fragment
         android:id="@+id/groupCreateFragment"
@@ -67,8 +78,28 @@
         android:name="com.example.myapplication.presentation.group.GroupInsideFragment"
         android:label="그룹 내부 확인">
         <action
-            android:id="@+id/action_groupInsideFragment_to_groupCreateFragment"
+            android:id="@+id/action_groupInsideFragment_to_groupDiscussionFragment"
+            app:destination="@id/groupBookFragment"/>
+        <action
+            android:id="@+id/action_groupInsideFragment_to_groupDiscussionCreateFragment"
+            app:destination="@id/DiscussionCreateFragment"/>
+        <action
+            android:id="@+id/action_groupInsideFragment_to_groupEditFragment"
             app:destination="@id/groupCreateFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/GroupEditFragment"
+        android:name="com.example.myapplication.presentation.group.GroupEditFragment"
+        android:label="그룹 수정 화면"/>
+
+    <fragment
+        android:id="@+id/DiscussionCreateFragment"
+        android:name="com.example.myapplication.presentation.group.discussion.DiscussionCreateFragment"
+        android:label="그룹 토론 만들기 화면">
+        <action
+            android:id="@+id/action_discussionCreateFragment_to_bookSearchFragment"
+            app:destination="@id/bookSearchFragment"/>
     </fragment>
 
 <!--    홈 관련 프래그먼트-->

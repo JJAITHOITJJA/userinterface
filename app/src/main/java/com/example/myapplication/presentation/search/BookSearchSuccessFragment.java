@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.myapplication.R;
@@ -26,6 +28,7 @@ public class BookSearchSuccessFragment extends Fragment {
     private FragmentBookSearchSuccessBinding binding;
     private BookSearchResultAdapter adapter;
     private ArrayList<Book> bookList = new ArrayList<>();
+    private NavController navController;
     private OnBookSelectedListener onBookSelectedListener;
 
     private static final String ARG_BOOK_LIST = "book_list";
@@ -55,6 +58,7 @@ public class BookSearchSuccessFragment extends Fragment {
                 bookList = new ArrayList<>();
             }
         }
+
     }
 
     @Nullable
@@ -86,7 +90,6 @@ public class BookSearchSuccessFragment extends Fragment {
         binding.rvLocationSearchSuccess.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.rvLocationSearchSuccess.setAdapter(adapter);
     }
-
     private void updateSearchCount(int count) {
         String countText = count + "개의 검색 결과가 있습니다";
         SpannableString spannable = new SpannableString(countText);

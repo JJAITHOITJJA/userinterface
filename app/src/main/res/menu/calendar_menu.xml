@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_view_list"
+        android:icon="@drawable/ic_booklist"
+        android:title="책 리스트 보기"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_view_calendar"
+        android:icon="@drawable/ic_calendar"
+        android:title="캘린더 보기"
+        app:showAsAction="ifRoom"
+        android:visible="false" />
+</menu>

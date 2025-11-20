@@ -1,6 +1,9 @@
 package com.example.myapplication.presentation.group;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,23 +11,27 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
+import androidx.core.graphics.Insets;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
-
+import androidx.recyclerview.widget.LinearLayoutManager;
+import com.example.myapplication.data.OnItemClickListener;
 import com.example.myapplication.R;
-import com.example.myapplication.data.group.GroupItem;
+import com.example.myapplication.data.group.DiscussionItem;
 import com.example.myapplication.data.onmate.AddMateItem;
 import com.example.myapplication.databinding.FragmentGroupInsideBinding;
-import com.google.android.gms.tasks.Task;
+import com.example.myapplication.presentation.MainActivity;
+import com.example.myapplication.presentation.group.discussion.DiscussionAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 public class GroupInsideFragment extends Fragment {
     FragmentGroupInsideBinding binding;
@@ -36,6 +43,7 @@ public class GroupInsideFragment extends Fragment {
     private List<String> discussionList;
 
     private AddMateAdapter mateAdapter;
+    private DiscussionAdapter discussionAdapter;
 
     private NavController navController;
 
@@ -45,6 +53,7 @@ public class GroupInsideFragment extends Fragment {
         super.onCreate(savedInstanceState);
         user = FirebaseAuth.getInstance().getCurrentUser();
         db = FirebaseFirestore.getInstance();
+        ((MainActivity) getActivity()).hideBottom();
     }
 
     @Override
@@ -52,59 +61,103 @@ public class GroupInsideFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
 
         binding = FragmentGroupInsideBinding.inflate(inflater, container, false);
+
         return binding.getRoot();
     }
 
 
-    // binding.button.setOnClickListener 같은 작업 여기서 처리할 것
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Bundle bundle = getArguments();
-        groupId = bundle.getString("groupId");
+        if (bundle != null) {
+            groupId = bundle.getString("groupId");
+            Log.d("GroupInsideFragment", "groupId 로드: " + groupId);
+        } else {
+            Log.e("GroupInsideFragment", "Bundle이 null입니다. groupId 로드 실패.");
+            return;
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            Insets navigationBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
+
+            int extraPaddingTop = 3;
+
+            // 하단 패딩을 navigationBars.bottom으로 설정하여 네비게이션 바 위로 올림
+            v.setPadding(
+                    systemBars.left,
+                    systemBars.top + dpToPx(v.getContext(), extraPaddingTop),
+                    systemBars.right,
+                    navigationBars.bottom  // 시스템 네비게이션 바 높이만큼 패딩
+            );
+            v.post(() -> ((MainActivity) requireActivity()).hideBottom());
+            return insets;
+        });
+
 
         initMemberAdapter();
         initDiscussionAdapter();
         loadGroupInfo();
 
         navController = NavHostFragment.findNavController(this);
-//
-//        binding.ivBackGroupList.setOnClickListener(view ->{
-//
-//        });
 
-        binding.fabGroupCreate.setOnClickListener(v->{
+        binding.ivBackGroupList.setOnClickListener(v->{
+            Log.d("GroupInsideFragment", "뒤로 가기 버튼 클릭");
+            navController.popBackStack();
         });
 
+        binding.fabDiscussionCreate.setOnClickListener(v->{
+            Bundle bundle1= new Bundle();
+            bundle1.putString("groupId", groupId);
+            navController.navigate(R.id.action_groupInsideFragment_to_groupDiscussionCreateFragment, bundle1);
+        });
 
-        NavController navController = NavHostFragment.findNavController(this);
+        binding.ivGroupEdit.setOnClickListener(v->
+                navController.navigate(R.id.action_groupInsideFragment_to_groupEditFragment)
+                );
 
+
+
+    }
+
+    private int dpToPx(Context context, int dp) {
+        return Math.round(
+                TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP,
+                        dp,
+                        context.getResources().getDisplayMetrics()
+                )
+        );
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        ((MainActivity) getActivity()).showBottom();
         binding = null;
     }
 
     private void loadGroupInfo(){
+        Log.d("GroupInsideFragment", "loadGroupInfo() 실행: 그룹 문서 로드 시작");
         db.collection("group").document(groupId).get().addOnCompleteListener(task -> {
             if(task.isSuccessful()){
                 DocumentSnapshot document = task.getResult();
                 if(document.exists()){
+                    Log.d("GroupInsideFragment", "그룹 문서 로드 성공");
                     binding.tvGroupInsideName.setText(document.getString("name"));
                     binding.tvGroupDescription.setText(document.getString("description"));
+                    Log.d("GroupInsideFragment", "그룹 이름: " + document.getString("name"));
 
                     Object membersObj = document.get("members");
                     Object discussionsObj = document.get("discussionList");
 
-                    // members 처리
                     if (membersObj instanceof List) {
-                        // ArrayList인 경우
+                        Log.d("GroupInsideFragment", "members 필드 (List) 처리");
                         members = new ArrayList<>((List<String>) membersObj);
                         loadGroupMate(members);
                     } else if (membersObj instanceof Map) {
-                        // Map인 경우
+                        Log.d("GroupInsideFragment", "members 필드 (Map) 처리 (비표준)");
                         Map<String, Object> membersMap = (Map<String, Object>) membersObj;
                         members = new ArrayList<>();
                         for (Object memberValue : membersMap.values()) {
@@ -113,15 +166,16 @@ public class GroupInsideFragment extends Fragment {
                             }
                         }
                         loadGroupMate(members);
+                    } else {
+                        Log.w("GroupInsideFragment", "members 필드 타입 알 수 없음 또는 없음");
                     }
 
-                    // discussionList 처리
                     if(discussionsObj instanceof List){
-                        // ArrayList인 경우
+                        Log.d("GroupInsideFragment", "discussionList 필드 (List) 처리");
                         discussionList = new ArrayList<>((List<String>) discussionsObj);
                         loadDiscussionData(discussionList);
                     } else if(discussionsObj instanceof Map){
-                        // Map인 경우
+                        Log.d("GroupInsideFragment", "discussionList 필드 (Map) 처리 (비표준)");
                         Map<String, Object> discussionsMap = (Map<String, Object>) discussionsObj;
                         discussionList = new ArrayList<>();
                         for(Object discussionValue : discussionsMap.values()){
@@ -130,54 +184,132 @@ public class GroupInsideFragment extends Fragment {
                             }
                         }
                         loadDiscussionData(discussionList);
+                    } else {
+                        Log.w("GroupInsideFragment", "discussionList 필드 타입 알 수 없음 또는 없음");
                     }
+                } else {
+                    Log.e("GroupInsideFragment", "문서 ID가 존재하지 않음: " + groupId);
                 }
+            } else {
+                Log.e("GroupInsideFragment", "그룹 문서 로드 실패", task.getException());
             }
         });
     }
 
     private void loadDiscussionData(List<String> discussionIds){
-        // 토론 데이터 로드 구현
+        if(discussionIds == null || discussionIds.isEmpty()){
+            discussionAdapter.submitList(Collections.emptyList());
+            Log.d("GroupInsideFragment", "loadDiscussionData: 토론 ID 목록이 비어 있습니다.");
+            return;
+        }
+
+        Log.d("GroupInsideFragment", "loadDiscussionData() 실행: 토론 ID 개수: " + discussionIds.size());
+
+        List<DiscussionItem> discussionItems = new ArrayList<>();
+
+        for(String discussionId : discussionIds){
+            db.collection("discussion").document(discussionId).get()
+                    .addOnCompleteListener(task -> {
+                        if(task.isSuccessful()){
+                            DocumentSnapshot document = task.getResult();
+                            if(document.exists()){
+                                Log.d("GroupInsideFragment", "토론 문서 로드 성공: " + discussionId);
+                                String bookName = document.getString("bookName");
+                                String author = document.getString("author");
+                                String topic = document.getString("topic");
+                                String bookCover = document.getString("bookCover");
+
+                                DiscussionItem item = new DiscussionItem(
+                                        discussionId,
+                                        bookName,
+                                        author,
+                                        bookCover,
+                                        topic,
+                                        FieldValue.serverTimestamp().toString()
+                                );
+                                discussionItems.add(item);
+                                Log.d("GroupInsideFragment", "현재 로드된 토론 항목 개수: " + discussionItems.size());
+
+                                if(discussionItems.size() == discussionIds.size()){
+                                    discussionItems.sort(DiscussionItem::compareTo);
+                                    db.collection("group").document(groupId)
+                                            .update("thumbnailUrl", discussionItems.get(0).getBookImageUrl());
+                                    discussionAdapter.submitList(new ArrayList<>(discussionItems));
+                                }
+                            } else {
+                                Log.w("GroupInsideFragment", "토론 문서가 존재하지 않음: " + discussionId);
+                            }
+                        } else {
+                            Log.e("GroupInsideFragment", "토론 문서 로드 실패: " + discussionId, task.getException());
+                        }
+                    });
+        }
     }
 
     private void initMemberAdapter(){
         mateAdapter = new AddMateAdapter();
         mateAdapter.setDeleteMode(false);
         binding.rvGroupMate.setAdapter(mateAdapter);
+        Log.d("GroupInsideFragment", "initMemberAdapter 실행");
     }
 
-    // uid 리스트를 받아서 db에서 각 uid별로 객체 조회 후 adapter에 매핑해주는 함수
     private void loadGroupMate(List<String> members){
         if(members == null || members.isEmpty()){
+            Log.d("GroupInsideFragment", "loadGroupMate: 멤버 목록이 비어 있습니다.");
             return;
         }
 
+        Log.d("GroupInsideFragment", "loadGroupMate() 실행: 멤버 ID 개수: " + members.size());
         List<AddMateItem> mateList = new ArrayList<>();
 
         for(String memberId : members){
             db.collection("users").document(memberId).get()
                     .addOnCompleteListener(task -> {
-                        if(task.isSuccessful()){
-                            DocumentSnapshot document = task.getResult();
-                            if(document.exists()){
-                                AddMateItem item = new AddMateItem(
-                                        document.getString("nickname"),
-                                        document.getId(),
-                                        R.drawable.capibara
-                                );
-                                mateList.add(item);
+                                if(task.isSuccessful()){
+                                    DocumentSnapshot document = task.getResult();
+                                    if(document.exists()){
+                                        Log.d("GroupInsideFragment", "멤버 문서 로드 성공: " + memberId + " 닉네임: " + document.getString("nickname"));
+                                        AddMateItem item = new AddMateItem(
+                                                document.getString("nickname"),
+                                                document.getId(),
+                                                document.getString("profileImageUrl")
+                                        );
+                                        mateList.add(item);
 
-                                // 모든 멤버 데이터가 로드되었을 때 어댑터 업데이트
-                                if(mateList.size() == members.size()){
-                                    mateAdapter.submitList(new ArrayList<>(mateList));
+                                        if(mateList.size() == members.size()){
+                                            Log.d("GroupInsideFragment", "모든 멤버 문서 로드 완료. 어댑터 업데이트.");
+                                            mateAdapter.submitList(new ArrayList<>(mateList));
+                                        }
+                                    } else {
+                                        Log.w("GroupInsideFragment", "멤버 문서가 존재하지 않음: " + memberId);
+                                    }
+                                } else {
+                                    Log.e("GroupInsideFragment", "멤버 문서 로드 실패: " + memberId, task.getException());
                                 }
                             }
-                        }
-                    });
+                    );
         }
     }
 
     private void initDiscussionAdapter(){
-        // 토론 어댑터 초기화 구현
+        discussionAdapter = new DiscussionAdapter();
+        discussionAdapter.setOnItemClickListener(new OnItemClickListener<DiscussionItem>(){
+            @Override
+            public void onItemClick(DiscussionItem item, int position) {
+                Log.d("GroupInsideFragment", "토론 항목 클릭: ID " + item.getDiscussionId());
+                Bundle bundle = new Bundle();
+                bundle.putString("discussionId", item.getDiscussionId());
+                bundle.putString("bookname", item.getBookName());
+                bundle.putString("author", item.getAuthor());
+                bundle.putString("topic", item.getTopic());
+                bundle.putString("bookCover", item.getBookImageUrl());
+                navController.navigate(R.id.action_groupInsideFragment_to_groupDiscussionFragment, bundle);
+            }
+
+        });
+        binding.rvDiscussionList.setLayoutManager(new LinearLayoutManager(requireContext()));
+        binding.rvDiscussionList.setAdapter(discussionAdapter);
+        discussionAdapter.submitList(Collections.emptyList());
+        Log.d("GroupInsideFragment", "initDiscussionAdapter 실행");
     }
 }

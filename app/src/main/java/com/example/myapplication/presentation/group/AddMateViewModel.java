@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.myapplication.data.onmate.AddMateItem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AddMateViewModel extends ViewModel {
@@ -15,18 +16,14 @@ public class AddMateViewModel extends ViewModel {
     public void addMateToSelection(AddMateItem mateItem){
         List<AddMateItem> currentList = _addedMates.getValue();
 
-        boolean isDuplicate = false;
-        for(AddMateItem item: currentList){
-            if(item.getUId().equals(mateItem.getUId())){
-                isDuplicate = true;
-                break;
-            }
+        if (currentList == null) {
+            currentList = new ArrayList<>();
         }
 
-        if(!isDuplicate){
-            currentList.add(mateItem);
-            _addedMates.setValue(currentList);
-        }
+        List<AddMateItem> newList = new ArrayList<>(currentList);
+        newList.add(mateItem);
+        _addedMates.setValue(newList);
+
     }
 
     public void removeMateFromSelection(AddMateItem mateItem){

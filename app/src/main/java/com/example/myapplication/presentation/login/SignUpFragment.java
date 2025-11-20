@@ -28,6 +28,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.example.myapplication.databinding.FragmentSignUpBinding;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -159,7 +160,11 @@ public class SignUpFragment extends Fragment {
         userProfile.put("nickname", nickname);
         userProfile.put("email", email);
         userProfile.put("createdAt", FieldValue.serverTimestamp());
-        userProfile.put("role", "general");
+        userProfile.put("groupList", new ArrayList<String>());
+        userProfile.put("discussionList", new ArrayList<String>());
+        userProfile.put("profileImageUrl","");
+        userProfile.put("requested", new ArrayList<String>());
+
 
         Log.d(TAG, "Attempting Firestore save for UID: " + user.getUid());
 
@@ -169,7 +174,6 @@ public class SignUpFragment extends Fragment {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "Firestore save successful. Navigating back.");
-                        Toast.makeText(requireContext(), "🎉 " + nickname + "님, 회원가입 완료!", Toast.LENGTH_SHORT).show();
                         getParentFragmentManager().popBackStack();
                     }
                 })
@@ -177,7 +181,6 @@ public class SignUpFragment extends Fragment {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.e(TAG, "Firestore save failed: " + e.getMessage());
-                        Toast.makeText(requireContext(), "데이터 저장 실패: 다시 시도해주세요.", Toast.LENGTH_LONG).show();
                     }
                 });
     }

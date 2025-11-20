@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.data.OnItemClickListener;
 import com.example.myapplication.data.group.GroupItem;
@@ -62,7 +63,16 @@ public class GroupAdapter extends ListAdapter<GroupItem, GroupAdapter.GroupViewH
         }
 
         public void bind(GroupItem item) {
-            thumbnail.setImageResource(R.drawable.sayhello); // TODO : 나중에 이미지 연결 완료 후 수정
+            String imageUrl = item.getThumbnailUrl();
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+                Glide.with(itemView.getContext())
+                        .load(imageUrl)
+                        .placeholder(R.color.g2)
+                        .error(R.color.g2)
+                        .into(thumbnail);
+            } else {
+                thumbnail.setImageResource(R.color.g2);
+            }
             name.setText(item.getName());
             lockIcon.setVisibility(item.getIsLocked() ? View.VISIBLE : View.GONE);
             startDate.setText(item.getStartDate());

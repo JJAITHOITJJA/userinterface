@@ -11,7 +11,7 @@
     android:title="@string/home" />
 
     <item
-        android:id="@+id/calendarFragment"
+        android:id="@+id/recordDestination"
         android:icon="@drawable/nav_calendar"
         android:title="@string/calendar"/>
 </menu>
