@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/homeFragment">
 
@@ -27,9 +28,15 @@
     </fragment>
 
     <fragment
-        android:id="@+id/calendarFragment"
-        android:name="com.example.myapplication.presentation.calendar.CalendarFragment"
-        android:label="My Page"/>
+        android:id="@+id/recordDestination"
+        android:name="com.example.myapplication.presentation.record.RecordContainerFragment"
+        android:label="record"
+        tools:layout="@layout/fragment_record_container" >
+    <action
+        android:id="@+id/action_recordContainer_to_recordCreate"
+        app:destination="@id/recordCreateFragment" />
+    </fragment>
+
 
 
 <!--    그룹 관련 프래그먼트-->

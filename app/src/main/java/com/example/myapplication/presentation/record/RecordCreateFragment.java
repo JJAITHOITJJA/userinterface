@@ -26,6 +26,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.prolificinteractive.materialcalendarview.CalendarDay;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -41,7 +42,7 @@ public class RecordCreateFragment extends Fragment {
     private Book selectedBook;
     private int currentRating = 0;
     private ImageView[] stars;
-    private String selectedDate;
+    private CalendarDay selectedCalendarDay;
 
     private FirebaseFirestore db;
     private FirebaseAuth auth;
@@ -64,6 +65,7 @@ public class RecordCreateFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
+        setCurrentDate();
         initializeStars();
         setupBookSearchClickListeners();
         setupFragmentResultListener();
@@ -72,7 +74,6 @@ public class RecordCreateFragment extends Fragment {
         setupCheckBoxes();
         setupBackButton();
         setupConfirmButton();
-        setCurrentDate();
     }
 
     private void initializeStars() {
@@ -86,20 +87,17 @@ public class RecordCreateFragment extends Fragment {
     }
 
     private void setupBookSearchClickListeners() {
-        // 책 검색 박스 클릭 시 BookSearchFragment로 이동
         View.OnClickListener searchClickListener = v -> {
             NavController navController = Navigation.findNavController(v);
             navController.navigate(R.id.action_recordCreateFragment_to_bookSearchFragment);
         };
 
-        // iv_book_search_box, iv_search_ic, tv_book_title 클릭 시 검색 화면으로 이동
         binding.ivBookSearchBox.setOnClickListener(searchClickListener);
         binding.ivSearchIc.setOnClickListener(searchClickListener);
         binding.tvBookTitle.setOnClickListener(searchClickListener);
     }
 
     private void setupFragmentResultListener() {
-        // BookSearchFragment에서 선택한 책 정보 받기
         getParentFragmentManager().setFragmentResultListener(
                 "book_selection",
                 getViewLifecycleOwner(),
@@ -124,21 +122,32 @@ public class RecordCreateFragment extends Fragment {
     }
 
     private void setCurrentDate() {
-        Calendar calendar = Calendar.getInstance();
+        selectedCalendarDay = CalendarDay.today();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd", Locale.getDefault());
-        selectedDate = sdf.format(calendar.getTime());
-        binding.tvRecordSelectedDate.setText(selectedDate);
+
+        Calendar cal = Calendar.getInstance();
+        cal.set(selectedCalendarDay.getYear(),
+                selectedCalendarDay.getMonth() - 1,
+                selectedCalendarDay.getDay());
+
+        String dateString = sdf.format(cal.getTime());
+        binding.tvRecordSelectedDate.setText(dateString);
     }
 
     private void showDatePicker() {
         Calendar calendar = Calendar.getInstance();
+        calendar.set(selectedCalendarDay.getYear(),
+                selectedCalendarDay.getMonth() - 1,
+                selectedCalendarDay.getDay());
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 requireContext(),
                 (view, year, month, dayOfMonth) -> {
-                    selectedDate = String.format(Locale.getDefault(), "%d.%02d.%02d",
+                    selectedCalendarDay = CalendarDay.from(year, month + 1, dayOfMonth);
+
+                    String dateString = String.format(Locale.getDefault(), "%d.%02d.%02d",
                             year, month + 1, dayOfMonth);
-                    binding.tvRecordSelectedDate.setText(selectedDate);
+                    binding.tvRecordSelectedDate.setText(dateString);
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
@@ -149,7 +158,7 @@ public class RecordCreateFragment extends Fragment {
     }
 
     private void setupStarRating() {
-        for (int i = 0;i < stars.length;i++){
+        for (int i = 0; i < stars.length; i++){
             final int rating = i + 1;
             stars[i].setOnClickListener(v -> setRating(rating));
         }
@@ -158,7 +167,7 @@ public class RecordCreateFragment extends Fragment {
     private void setRating(int rating) {
         currentRating = rating;
 
-        for (int i = 0;i < stars.length;i++){
+        for (int i = 0; i < stars.length; i++){
             if (i < rating) {
                 stars[i].setBackgroundResource(R.drawable.ic_star_filled);
             } else {
@@ -218,7 +227,6 @@ public class RecordCreateFragment extends Fragment {
     }
 
     private void setupConfirmButton() {
-        // 확인 버튼 클릭 시
         binding.btnRecordCreate.setOnClickListener(v -> {
             if (validateForm()) {
                 createRecord();
@@ -227,19 +235,16 @@ public class RecordCreateFragment extends Fragment {
     }
 
     private boolean validateForm() {
-        // 책 선택 확인
         if (selectedBook == null) {
             Toast.makeText(getContext(), "책을 선택해주세요", Toast.LENGTH_SHORT).show();
             return false;
         }
 
-        // 별점 확인
         if (currentRating == 0) {
             Toast.makeText(getContext(), "별점을 선택해주세요", Toast.LENGTH_SHORT).show();
             return false;
         }
 
-        // 페이지 입력 확인
         String startPageStr = binding.etRecordPage1.getText().toString().trim();
         String endPageStr = binding.etRecordPage2.getText().toString().trim();
 
@@ -266,7 +271,6 @@ public class RecordCreateFragment extends Fragment {
             return false;
         }
 
-        // 감상평 확인
         String review = binding.etRecordReview.getText().toString().trim();
         if (TextUtils.isEmpty(review)) {
             Toast.makeText(getContext(), "감상평을 입력해주세요", Toast.LENGTH_SHORT).show();
@@ -277,7 +281,6 @@ public class RecordCreateFragment extends Fragment {
     }
 
     private void createRecord() {
-        // 현재 사용자 확인
         FirebaseUser currentUser = auth.getCurrentUser();
         if (currentUser == null) {
             Toast.makeText(getContext(), "로그인이 필요합니다", Toast.LENGTH_SHORT).show();
@@ -300,24 +303,25 @@ public class RecordCreateFragment extends Fragment {
 
         String isbn = selectedBook.getIsbn();
 
-        // Book 컬렉션 참조
+        // CalendarDay를 "yyyy-MM-dd" 문자열로 변환
+        String lastRecordDate = String.format(Locale.getDefault(), "%d-%02d-%02d",
+                selectedCalendarDay.getYear(),
+                selectedCalendarDay.getMonth(),
+                selectedCalendarDay.getDay());
+
         DocumentReference bookRef = db.collection("users")
                 .document(userId)
                 .collection("books")
                 .document(isbn);
 
-        // Book 문서가 존재하는지 확인
         bookRef.get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
-                // Book이 이미 존재하면 category와 status 업데이트
-                updateBookFields(bookRef, category, status, selectedDate, isPublic);
+                updateBookFields(bookRef, category, status, lastRecordDate, isPublic);
             } else {
-                // Book이 존재하지 않으면 새로 생성
-                createNewBook(bookRef, category, status, selectedDate, isPublic);
+                createNewBook(bookRef, category, status, lastRecordDate, isPublic);
             }
 
-            // Record 추가 (books와 같은 계층에)
-            addRecord(userId, isbn, startPage, endPage, review, isPublic);
+            addRecord(userId, isbn, startPage, endPage, review, status, category, isPublic);
 
         }).addOnFailureListener(e -> {
             Log.e(TAG, "Book 확인 실패", e);
@@ -326,7 +330,7 @@ public class RecordCreateFragment extends Fragment {
     }
 
     private void createNewBook(DocumentReference bookRef, String category, String status,
-                                String lastRecordDate, boolean isPublic) {
+                               String lastRecordDate, boolean isPublic) {
         Map<String, Object> bookData = new HashMap<>();
         bookData.put("isbn", selectedBook.getIsbn());
         bookData.put("title", selectedBook.getTitle());
@@ -339,16 +343,12 @@ public class RecordCreateFragment extends Fragment {
         bookData.put("createdAt", FieldValue.serverTimestamp());
 
         bookRef.set(bookData)
-                .addOnSuccessListener(aVoid -> {
-                    Log.d(TAG, "Book 생성 성공");
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Book 생성 실패", e);
-                });
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Book 생성 성공"))
+                .addOnFailureListener(e -> Log.e(TAG, "Book 생성 실패", e));
     }
 
     private void updateBookFields(DocumentReference bookRef, String category, String status,
-                                   String lastRecordDate, boolean isPublic) {
+                                  String lastRecordDate, boolean isPublic) {
         Map<String, Object> updates = new HashMap<>();
         updates.put("category", category);
         updates.put("status", status);
@@ -356,22 +356,23 @@ public class RecordCreateFragment extends Fragment {
         updates.put("isPublic", isPublic);
 
         bookRef.update(updates)
-                .addOnSuccessListener(aVoid -> {
-                    Log.d(TAG, "Book 업데이트 성공");
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Book 업데이트 실패", e);
-                });
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Book 업데이트 성공"))
+                .addOnFailureListener(e -> Log.e(TAG, "Book 업데이트 실패", e));
     }
 
     private void addRecord(String userId, String isbn, int startPage, int endPage,
-                           String review, boolean isPublic) {
-        // Record 데이터 생성
+                           String review, String status, String category, boolean isPublic) {
+        // CalendarDay를 "yyyy-MM-dd" 문자열로 변환
+        String dateString = String.format(Locale.getDefault(), "%d-%02d-%02d",
+                selectedCalendarDay.getYear(),
+                selectedCalendarDay.getMonth(),
+                selectedCalendarDay.getDay());
+
         Map<String, Object> recordData = new HashMap<>();
         recordData.put("isbn", isbn);
         recordData.put("cover", selectedBook.getImageUrl());
         recordData.put("title", selectedBook.getTitle());
-        recordData.put("date", selectedDate);
+        recordData.put("date", dateString);
         recordData.put("startPage", startPage);
         recordData.put("endPage", endPage);
         recordData.put("rating", currentRating);
@@ -379,7 +380,6 @@ public class RecordCreateFragment extends Fragment {
         recordData.put("isPublic", isPublic);
         recordData.put("createdAt", FieldValue.serverTimestamp());
 
-        // users/{userId}/records 컬렉션에 추가 (books와 같은 계층)
         db.collection("users")
                 .document(userId)
                 .collection("records")
@@ -387,9 +387,6 @@ public class RecordCreateFragment extends Fragment {
                 .addOnSuccessListener(documentReference -> {
                     Log.d(TAG, "Record 추가 성공: " + documentReference.getId());
 
-                    // FeedItem 생성 (기존 로직 유지)
-                    String status = binding.cbRecordStateReading.isChecked() ? "읽는중" : "완독";
-                    String category = binding.cbRecordCategoryLiterature.isChecked() ? "문학" : "비문학";
                     boolean isPrivate = binding.cbRecordPrivate.isChecked();
 
                     FeedItem newFeedItem = new FeedItem(
@@ -397,7 +394,7 @@ public class RecordCreateFragment extends Fragment {
                             selectedBook.getTitle(),
                             selectedBook.getAuthor(),
                             selectedBook.getImageUrl(),
-                            selectedDate,
+                            selectedCalendarDay,
                             currentRating,
                             startPage,
                             endPage,
@@ -407,14 +404,12 @@ public class RecordCreateFragment extends Fragment {
                             isPrivate
                     );
 
-                    // HomeFragment로 결과 전달
                     Bundle result = new Bundle();
                     result.putParcelable("new_feed_item", newFeedItem);
                     getParentFragmentManager().setFragmentResult("record_created", result);
 
                     Toast.makeText(getContext(), "기록이 추가되었습니다", Toast.LENGTH_SHORT).show();
 
-                    // 이전 화면으로 돌아가기
                     if (getActivity() != null) {
                         getActivity().onBackPressed();
                     }
