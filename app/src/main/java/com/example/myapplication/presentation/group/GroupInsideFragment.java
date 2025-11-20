@@ -87,7 +87,7 @@ public class GroupInsideFragment extends Fragment {
             // 하단 패딩을 navigationBars.bottom으로 설정하여 네비게이션 바 위로 올림
             v.setPadding(
                     systemBars.left,
-                    systemBars.top + dpToPx(v.getContext(), extraPaddingTop),
+                    0,
                     systemBars.right,
                     navigationBars.bottom  // 시스템 네비게이션 바 높이만큼 패딩
             );
@@ -307,9 +307,61 @@ public class GroupInsideFragment extends Fragment {
             }
 
         });
+
+        discussionAdapter.setOnItemLongClickListener(new DiscussionAdapter.OnItemLongClickListener<DiscussionItem>(){
+            @Override
+            public void onItemLongClick(DiscussionItem item, int position) {
+                showDeleteDialog(item);
+            }
+        });
         binding.rvDiscussionList.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.rvDiscussionList.setAdapter(discussionAdapter);
         discussionAdapter.submitList(Collections.emptyList());
         Log.d("GroupInsideFragment", "initDiscussionAdapter 실행");
+    }
+
+    private void showDeleteDialog(DiscussionItem item){
+        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle("토론 삭제")
+                .setMessage("'" + item.getBookName() + "' 토론을 삭제하시겠습니까?")
+                .setPositiveButton("삭제", (dialog, which) -> {
+                    deleteDiscussion(item.getDiscussionId());
+                })
+                .setNegativeButton("취소", null)
+                .show();
+    }
+
+    private void deleteDiscussion(String discussionId){
+        // 1. group 문서에서 discussionList 업데이트
+        db.collection("group").document(groupId)
+                .update("discussionList", FieldValue.arrayRemove(discussionId))
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("GroupInsideFragment", "토론 ID가 그룹에서 제거됨: " + discussionId);
+
+                    // 2. discussion 문서 삭제
+                    db.collection("discussion").document(discussionId)
+                            .delete()
+                            .addOnSuccessListener(aVoid2 -> {
+                                Log.d("GroupInsideFragment", "토론 문서 삭제 성공: " + discussionId);
+                                android.widget.Toast.makeText(requireContext(),
+                                        "토론이 삭제되었습니다",
+                                        android.widget.Toast.LENGTH_SHORT).show();
+
+                                // 3. UI 새로고침
+                                loadGroupInfo();
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.e("GroupInsideFragment", "토론 문서 삭제 실패", e);
+                                android.widget.Toast.makeText(requireContext(),
+                                        "토론 삭제에 실패했습니다",
+                                        android.widget.Toast.LENGTH_SHORT).show();
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("GroupInsideFragment", "그룹에서 토론 ID 제거 실패", e);
+                    android.widget.Toast.makeText(requireContext(),
+                            "토론 삭제에 실패했습니다",
+                            android.widget.Toast.LENGTH_SHORT).show();
+                });
     }
 }

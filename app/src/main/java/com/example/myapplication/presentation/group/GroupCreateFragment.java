@@ -11,6 +11,9 @@ import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -20,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.example.myapplication.R;
 import com.example.myapplication.data.onmate.AddMateItem;
 import com.example.myapplication.databinding.FragmentGroupCreateBinding;
+import com.example.myapplication.presentation.MainActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -67,6 +71,23 @@ public class GroupCreateFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         initAddMateAdapter();
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            Insets navigationBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
+
+            int extraPaddingTop = 3;
+
+            // 하단 패딩을 navigationBars.bottom으로 설정하여 네비게이션 바 위로 올림
+            v.setPadding(
+                    systemBars.left,
+                    0,
+                    systemBars.right,
+                    navigationBars.bottom  // 시스템 네비게이션 바 높이만큼 패딩
+            );
+            v.post(() -> ((MainActivity) requireActivity()).hideBottom());
+            return insets;
+        });
 
         viewModel = new ViewModelProvider(requireActivity()).get(
                 AddMateViewModel.class);
@@ -152,7 +173,7 @@ public class GroupCreateFragment extends Fragment {
         group.put("peopleNumber", maxPeople);
         group.put("isLiterature", isLiterature);
         group.put("isLocked", isLocked);
-        group.put("startDate", FieldValue.serverTimestamp());
+        group.put("startDate", FieldValue.serverTimestamp().toString());
 
         group.put("discussionList", new ArrayList<>());
 

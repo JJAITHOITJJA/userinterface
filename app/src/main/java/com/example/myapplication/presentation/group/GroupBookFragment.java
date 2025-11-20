@@ -101,7 +101,6 @@ public class GroupBookFragment extends Fragment {
         super.onResume();
         ((MainActivity) getActivity()).hideBottom();
         loadCommentData();
-        Log.d("GroupBookFragment", "onResume 실행: loadCommentData 시작");
     }
 
     @Override
@@ -109,12 +108,18 @@ public class GroupBookFragment extends Fragment {
         super.onDestroyView();
         ((MainActivity) getActivity()).showBottom();
         binding = null;
-        Log.d("GroupBookFragment", "onDestroyView 실행");
     }
 
     private void writeRecomment(){
         String content = binding.etComment.getText().toString();
         String userId= user.getUid();
+
+        db.collection("users").document(userId).get().addOnSuccessListener(documentSnapshot -> {
+            String nickname = documentSnapshot.getString("nickname");
+            binding.etComment.setHint(nickname+"님의 의견에 대댓글을 작성해주세요");
+        });
+
+
 
         Map<String, Object> map = new HashMap<>();
         map.put("content", content);

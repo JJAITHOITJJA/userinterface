@@ -20,15 +20,24 @@ import org.jspecify.annotations.NonNull;
 
 public class DiscussionAdapter extends ListAdapter<DiscussionItem, DiscussionAdapter.DiscussionViewHolder> {
 
+    public interface OnItemLongClickListener<T> {
+        void onItemLongClick(T item, int position);
+    }
     private OnItemClickListener<DiscussionItem> listener = null;
+    private OnItemLongClickListener<DiscussionItem> longClickListener = null;
 
     public void setOnItemClickListener(OnItemClickListener<DiscussionItem> listener){
         this.listener = listener;
     }
 
+    public void setOnItemLongClickListener(OnItemLongClickListener<DiscussionItem> listener){
+        this.longClickListener = listener;
+    }
+
     public DiscussionAdapter(){
         super(new DiscussionAdapter.DiscussionItemDiffCallback());
     }
+
     public DiscussionAdapter(OnItemClickListener<DiscussionItem> listener){
         super(new DiscussionAdapter.DiscussionItemDiffCallback());
         this.listener= listener;
@@ -49,9 +58,18 @@ public class DiscussionAdapter extends ListAdapter<DiscussionItem, DiscussionAda
         holder.bind(item);
 
         holder.itemView.setOnClickListener(v->{
-            if(listener!= null&& holder.getAdapterPosition() != RecyclerView.NO_POSITION){
+            if(listener != null && holder.getAdapterPosition() != RecyclerView.NO_POSITION){
                 listener.onItemClick(getItem(holder.getAdapterPosition()), holder.getAdapterPosition());
             }
+        });
+
+        // 길게 누르기 리스너 추가
+        holder.itemView.setOnLongClickListener(v->{
+            if(longClickListener != null && holder.getAdapterPosition() != RecyclerView.NO_POSITION){
+                longClickListener.onItemLongClick(getItem(holder.getAdapterPosition()), holder.getAdapterPosition());
+                return true;
+            }
+            return false;
         });
     }
 
