@@ -20,41 +20,32 @@ import com.example.myapplication.presentation.calendar.CalendarFragment;
 
 public class RecordContainerFragment extends Fragment {
 
-    private Toolbar toolbar;
     private Menu optionsMenu;
-    private boolean isCalendarView = true; // 현재 캘린더 뷰인지 확인
+    private boolean isCalendarView = true;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
+
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        // "두 아이콘이 모두 포함된" 메뉴 XML을 인플레이트합니다.
-        // (만약 파일 이름이 main_menu.xml 등 다르면 맞게 수정)
         inflater.inflate(R.menu.calendar_menu, menu);
         this.optionsMenu = menu;
-
-        // 프래그먼트가 처음 로드될 때 현재 상태(isCalendarView)에 맞춰
-        // 아이콘 가시성을 설정합니다.
         updateIconVisibility();
-
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    // 3. 툴바 아이콘 클릭 이벤트를 처리하는 메서드 (새로 추가)
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
         if (id == R.id.action_view_list) {
-            // "책 리스트 보기" 아이콘 클릭 시
-            showBookListFragment(); // 리스트 뷰로 전환
+            showBookListFragment();
             return true;
         } else if (id == R.id.action_view_calendar) {
-            // "캘린더 보기" 아이콘 클릭 시
-            showCalendarFragment(); // 캘린더 뷰로 전환
+            showCalendarFragment();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -70,42 +61,42 @@ public class RecordContainerFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        toolbar = view.findViewById(R.id.toolbar);
-
-        // Activity가 툴바를 제어하도록 설정 (중요)
-        ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
-
-        // 처음 로드 시 캘린더 프래그먼트를 보여줌
         if (savedInstanceState == null) {
             showCalendarFragment();
         }
     }
-    // 캘린더 자식 프래그먼트 표시
+
     private void showCalendarFragment() {
-        // getChildFragmentManager() 사용 (중요)
         FragmentTransaction ft = getChildFragmentManager().beginTransaction();
         ft.replace(R.id.child_fragment_container, new CalendarFragment());
         ft.commit();
 
         isCalendarView = true;
-        updateIconVisibility(); // 아이콘 상태 업데이트
+        updateIconVisibility();
     }
 
-    // 책 리스트 자식 프래그먼트 표시
     private void showBookListFragment() {
         FragmentTransaction ft = getChildFragmentManager().beginTransaction();
         ft.replace(R.id.child_fragment_container, new BookListFragment());
         ft.commit();
 
         isCalendarView = false;
-        updateIconVisibility(); // 아이콘 상태 업데이트
+        updateIconVisibility();
     }
 
-    // 툴바의 아이콘 가시성 업데이트
     private void updateIconVisibility() {
+        // optionsMenu가 null이면 아무것도 하지 않음 (중요!)
         if (optionsMenu == null) return;
 
-        optionsMenu.findItem(R.id.action_view_list).setVisible(isCalendarView);
-        optionsMenu.findItem(R.id.action_view_calendar).setVisible(!isCalendarView);
+        MenuItem listItem = optionsMenu.findItem(R.id.action_view_list);
+        MenuItem calendarItem = optionsMenu.findItem(R.id.action_view_calendar);
+
+        // 각 MenuItem이 null인지 체크 (추가 안전장치)
+        if (listItem != null) {
+            listItem.setVisible(isCalendarView);
+        }
+        if (calendarItem != null) {
+            calendarItem.setVisible(!isCalendarView);
+        }
     }
 }

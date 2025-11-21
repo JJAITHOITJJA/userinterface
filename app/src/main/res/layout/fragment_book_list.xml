@@ -43,47 +43,73 @@
         </LinearLayout>
 
         <!-- 읽는 중 섹션 -->
-        <TextView
-            android:id="@+id/tvReadingSection"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="읽는 중"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="@color/black"
-            android:padding="16dp"
-            android:paddingTop="24dp" />
+            android:orientation="vertical"
+            android:paddingTop="8dp">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvReadingBooks"
+            <TextView
+                android:id="@+id/tvReadingSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="읽는 중"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="12dp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvReadingBooks"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:clipToPadding="false"
+                android:nestedScrollingEnabled="false" />
+        </LinearLayout>
+
+        <!-- 구분선 -->
+        <View
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:clipToPadding="false"
-            android:nestedScrollingEnabled="false" />
+            android:layout_height="1dp"
+            android:background="@color/deep_gray"
+            android:layout_marginTop="24dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp" />
 
         <!-- 완독한 책 섹션 -->
-        <TextView
-            android:id="@+id/tvFinishedSection"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="완독한 책"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="@color/black"
-            android:padding="16dp"
-            android:paddingTop="32dp" />
+            android:orientation="vertical">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvFinishedBooks"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:paddingBottom="16dp"
-            android:clipToPadding="false"
-            android:nestedScrollingEnabled="false" />
+            <TextView
+                android:id="@+id/tvFinishedSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="완독한 책"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="24dp"
+                android:paddingBottom="12dp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvFinishedBooks"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="24dp"
+                android:clipToPadding="false"
+                android:nestedScrollingEnabled="false" />
+        </LinearLayout>
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
