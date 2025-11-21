@@ -11,28 +11,32 @@
         android:id="@+id/iv_home_book_cover"
         android:layout_width="80dp"
         android:layout_height="100dp"
-        android:src="@drawable/sayhello"
+        android:src="@drawable/image_ready"
         app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium"
         android:layout_gravity="center_horizontal"/>
 
     <TextView
         android:id="@+id/tv_home_book_title"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="안녕이라 그랬어"
+        android:text="제목"
         android:fontFamily="@font/pretendard_bold"
         android:textSize="15sp"
         android:textColor="@color/font_main"
-        android:layout_gravity="center_horizontal"/>
+        android:gravity="center_horizontal"
+        android:maxLines="2"
+        android:ellipsize="end"/>
 
     <TextView
         android:id="@+id/tv_home_book_author"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="김애란"
+        android:text="작가"
         android:fontFamily="@font/pretendard_medium"
         android:textSize="14sp"
         android:textColor="@color/font_sub"
-        android:layout_gravity="center_horizontal"/>
+        android:gravity="center_horizontal"
+        android:maxLines="2"
+        android:ellipsize="end"/>
 
 </LinearLayout>

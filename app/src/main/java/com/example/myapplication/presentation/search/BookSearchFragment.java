@@ -134,9 +134,9 @@ public class BookSearchFragment extends Fragment {
     }
 
     private void performSearch(String query) {
-        // 검색어가 비어있으면 검색 실패 화면 표시
+        // 검색어가 비어있으면 초기 상태로
         if (query == null || query.trim().isEmpty()) {
-            showSearchFail();
+            showInitialState();
             return;
         }
 
@@ -145,6 +145,12 @@ public class BookSearchFragment extends Fragment {
     }
 
     private void searchBooksFromAPI(String query) {
+        // 로딩 오버레이 표시
+        binding.loadingOverlay.setVisibility(View.VISIBLE);
+        binding.viewSearchBg.setVisibility(View.GONE);
+        binding.fvSearchSuccess.setVisibility(View.GONE);
+        binding.clSearchFail.setVisibility(View.GONE);
+
         // Retrofit 서비스 인스턴스 생성
         RetrofitService service = RetrofitClient_aladin.getClient().create(RetrofitService.class);
 
@@ -198,6 +204,7 @@ public class BookSearchFragment extends Fragment {
     }
 
     private void showSearchSuccess(List<Book> results) {
+        binding.loadingOverlay.setVisibility(View.GONE);
         binding.viewSearchBg.setVisibility(View.GONE);
         binding.fvSearchSuccess.setVisibility(View.VISIBLE);
         binding.clSearchFail.setVisibility(View.GONE);
@@ -222,6 +229,7 @@ public class BookSearchFragment extends Fragment {
     }
 
     private void showSearchFail() {
+        binding.loadingOverlay.setVisibility(View.GONE);
         binding.viewSearchBg.setVisibility(View.GONE);
         binding.fvSearchSuccess.setVisibility(View.GONE);
         binding.clSearchFail.setVisibility(View.VISIBLE);
