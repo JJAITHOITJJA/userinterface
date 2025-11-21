@@ -325,16 +325,20 @@
 
     <EditText
         android:id="@+id/et_record_review"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:background="@null"
         android:hint="감상평을 입력하세요"
         android:textSize="15sp"
         android:textColor="@color/font_main"
-        android:layout_marginStart="17dp"
-        android:layout_marginTop="13dp"
+        android:padding="17dp"
+        android:gravity="top|start"
+        android:inputType="textMultiLine"
+        android:scrollbars="vertical"
         app:layout_constraintStart_toStartOf="@id/iv_record_review_bg"
-        app:layout_constraintTop_toTopOf="@id/iv_record_review_bg"/>
+        app:layout_constraintEnd_toEndOf="@id/iv_record_review_bg"
+        app:layout_constraintTop_toTopOf="@id/iv_record_review_bg"
+        app:layout_constraintBottom_toBottomOf="@id/iv_record_review_bg"/>
 
     <TextView
         android:id="@+id/tv_select_state_title"

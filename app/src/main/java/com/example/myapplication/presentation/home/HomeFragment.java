@@ -67,6 +67,11 @@ public class HomeFragment extends Fragment {
         setupClickListeners();
         setupRecordCreationListener();
         loadUserProfile();
+
+        // 로딩 오버레이 표시
+        binding.rvHomeFeed.setVisibility(View.GONE);
+        binding.loadingOverlay.setVisibility(View.VISIBLE);
+
         loadBooksFromFirebase();
     }
 
@@ -130,8 +135,9 @@ public class HomeFragment extends Fragment {
             navController.navigate(R.id.action_homeFragment_to_recordCreateFragment);
         });
 
-        binding.tvLogout.setOnClickListener(v -> {
-            showLogoutDialog();
+        binding.ivSettings.setOnClickListener(v -> {
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.navigate(R.id.action_homeFragment_to_settingsFragment);
         });
     }
 
@@ -233,19 +239,6 @@ public class HomeFragment extends Fragment {
 
         // 현재 필터링된 리스트 업데이트
         filterFeedItems(currentCategory);
-    }
-
-    private void showLogoutDialog() {
-        new AlertDialog.Builder(requireContext())
-                .setTitle("로그아웃")
-                .setMessage("로그아웃 하시겠습니까?")
-                .setPositiveButton("확인", (dialog, which) -> {
-                    performLogout();
-                })
-                .setNegativeButton("취소", (dialog, which) -> {
-                    dialog.dismiss();
-                })
-                .show();
     }
 
     private void performLogout() {
@@ -386,10 +379,18 @@ public class HomeFragment extends Fragment {
                     Log.d(TAG, "불러온 책 개수: " + allFeedItems.size());
                     // 초기에는 전체 항목 표시
                     filterFeedItems("전체");
+
+                    // 로딩 완료 - 오버레이 숨기기
+                    binding.rvHomeFeed.setVisibility(View.VISIBLE);
+                    binding.loadingOverlay.setVisibility(View.GONE);
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Books 불러오기 실패", e);
                     Toast.makeText(getContext(), "책 목록을 불러오는데 실패했습니다", Toast.LENGTH_SHORT).show();
+
+                    // 에러 시에도 오버레이 숨기기
+                    binding.rvHomeFeed.setVisibility(View.VISIBLE);
+                    binding.loadingOverlay.setVisibility(View.GONE);
                 });
     }
 

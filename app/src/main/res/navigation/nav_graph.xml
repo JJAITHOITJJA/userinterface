@@ -12,6 +12,9 @@
         <action
             android:id="@+id/action_homeFragment_to_recordCreateFragment"
             app:destination="@+id/recordCreateFragment"/>
+        <action
+            android:id="@+id/action_homeFragment_to_settingsFragment"
+            app:destination="@+id/settingsFragment"/>
     </fragment>
 
     <fragment
@@ -118,5 +121,10 @@
         android:id="@+id/bookSearchFragment"
         android:name="com.example.myapplication.presentation.search.BookSearchFragment"
         android:label="book search"/>
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.myapplication.presentation.home.SettingsFragment"
+        android:label="my page"/>
 
 </navigation>

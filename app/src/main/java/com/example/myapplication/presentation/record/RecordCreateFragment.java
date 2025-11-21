@@ -40,7 +40,7 @@ public class RecordCreateFragment extends Fragment {
 
     private FragmentRecordCreateBinding binding;
     private Book selectedBook;
-    private int currentRating = 0;
+    private int currentRating = 5;
     private ImageView[] stars;
     private CalendarDay selectedCalendarDay;
 
@@ -334,7 +334,7 @@ public class RecordCreateFragment extends Fragment {
         Map<String, Object> bookData = new HashMap<>();
         bookData.put("isbn", selectedBook.getIsbn());
         bookData.put("title", selectedBook.getTitle());
-        bookData.put("author", selectedBook.getAuthor());
+        bookData.put("author", selectedBook.getAuthor().replace(" (지은이)", "").replace("(지은이)", ""));
         bookData.put("cover", selectedBook.getImageUrl());
         bookData.put("category", category);
         bookData.put("status", status);
@@ -392,7 +392,7 @@ public class RecordCreateFragment extends Fragment {
                     FeedItem newFeedItem = new FeedItem(
                             documentReference.getId(),
                             selectedBook.getTitle(),
-                            selectedBook.getAuthor(),
+                            selectedBook.getAuthor().replace(" (지은이)", "").replace("(지은이)", ""),
                             selectedBook.getImageUrl(),
                             selectedCalendarDay,
                             currentRating,
