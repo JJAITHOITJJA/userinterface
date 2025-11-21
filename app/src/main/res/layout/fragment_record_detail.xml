@@ -50,261 +50,255 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- 책 정보 카드 -->
-            <com.google.android.material.card.MaterialCardView
+            <!-- 책 정보 영역 -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:layout_margin="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
+                android:padding="20dp"
+                android:background="@drawable/bg_record_review">
 
+                <!-- 책 표지와 기본 정보 -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="20dp">
+                    android:orientation="horizontal"
+                    android:paddingBottom="20dp">
 
-                    <!-- 책 표지와 기본 정보 -->
+                    <ImageView
+                        android:id="@+id/ivDetailBookCover"
+                        android:layout_width="100dp"
+                        android:layout_height="140dp"
+                        android:scaleType="centerCrop"
+                        android:background="@drawable/capibara" />
+
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:paddingBottom="20dp">
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:layout_marginStart="16dp"
+                        android:gravity="center_vertical">
 
-                        <ImageView
-                            android:id="@+id/ivDetailBookCover"
-                            android:layout_width="100dp"
-                            android:layout_height="140dp"
-                            android:scaleType="centerCrop"
-                            android:background="@drawable/capibara" />
-
-                        <LinearLayout
-                            android:layout_width="0dp"
+                        <TextView
+                            android:id="@+id/tvDetailBookTitle"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:layout_marginStart="16dp"
-                            android:gravity="center_vertical">
+                            android:text="책 제목"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"
+                            android:paddingBottom="8dp" />
 
-                            <TextView
-                                android:id="@+id/tvDetailBookTitle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="책 제목"
-                                android:textSize="18sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/black"
-                                android:paddingBottom="8dp" />
+                        <TextView
+                            android:id="@+id/tvDetailBookAuthor"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="저자명"
+                            android:textSize="14sp"
+                            android:textColor="@color/g6"
+                            android:paddingBottom="12dp" />
 
-                            <TextView
-                                android:id="@+id/tvDetailBookAuthor"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="저자명"
-                                android:textSize="14sp"
-                                android:textColor="@color/g6"
-                                android:paddingBottom="12dp" />
+                        <!-- 별점 표시 -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
 
-                            <!-- 별점 표시 -->
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal">
+                            <ImageView
+                                android:id="@+id/ivDetailStar1"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_marginEnd="4dp"
+                                android:src="@drawable/ic_star_unfilled" />
 
-                                <ImageView
-                                    android:id="@+id/ivDetailStar1"
-                                    android:layout_width="20dp"
-                                    android:layout_height="20dp"
-                                    android:layout_marginEnd="4dp"
-                                    android:src="@drawable/ic_star_unfilled" />
+                            <ImageView
+                                android:id="@+id/ivDetailStar2"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_marginEnd="4dp"
+                                android:src="@drawable/ic_star_unfilled" />
 
-                                <ImageView
-                                    android:id="@+id/ivDetailStar2"
-                                    android:layout_width="20dp"
-                                    android:layout_height="20dp"
-                                    android:layout_marginEnd="4dp"
-                                    android:src="@drawable/ic_star_unfilled" />
+                            <ImageView
+                                android:id="@+id/ivDetailStar3"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_marginEnd="4dp"
+                                android:src="@drawable/ic_star_unfilled" />
 
-                                <ImageView
-                                    android:id="@+id/ivDetailStar3"
-                                    android:layout_width="20dp"
-                                    android:layout_height="20dp"
-                                    android:layout_marginEnd="4dp"
-                                    android:src="@drawable/ic_star_unfilled" />
+                            <ImageView
+                                android:id="@+id/ivDetailStar4"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_marginEnd="4dp"
+                                android:src="@drawable/ic_star_unfilled" />
 
-                                <ImageView
-                                    android:id="@+id/ivDetailStar4"
-                                    android:layout_width="20dp"
-                                    android:layout_height="20dp"
-                                    android:layout_marginEnd="4dp"
-                                    android:src="@drawable/ic_star_unfilled" />
-
-                                <ImageView
-                                    android:id="@+id/ivDetailStar5"
-                                    android:layout_width="20dp"
-                                    android:layout_height="20dp"
-                                    android:src="@drawable/ic_star_unfilled" />
-                            </LinearLayout>
+                            <ImageView
+                                android:id="@+id/ivDetailStar5"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_star_unfilled" />
                         </LinearLayout>
                     </LinearLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/deep_gray"
-                        android:layout_marginBottom="16dp" />
-
-                    <!-- 날짜 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:paddingBottom="12dp">
-
-                        <TextView
-                            android:layout_width="80dp"
-                            android:layout_height="wrap_content"
-                            android:text="날짜"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/g6" />
-
-                        <TextView
-                            android:id="@+id/tvDetailDate"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="2025년 11월 19일"
-                            android:textSize="14sp"
-                            android:textColor="@color/black" />
-                    </LinearLayout>
-
-                    <!-- 페이지 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:paddingBottom="12dp">
-
-                        <TextView
-                            android:layout_width="80dp"
-                            android:layout_height="wrap_content"
-                            android:text="페이지"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/g6" />
-
-                        <TextView
-                            android:id="@+id/tvDetailPage"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="1 ~ 100 페이지"
-                            android:textSize="14sp"
-                            android:textColor="@color/black" />
-                    </LinearLayout>
-
-                    <!-- 상태 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:paddingBottom="12dp">
-
-                        <TextView
-                            android:layout_width="80dp"
-                            android:layout_height="wrap_content"
-                            android:text="상태"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/g6" />
-
-                        <TextView
-                            android:id="@+id/tvDetailStatus"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="읽는중"
-                            android:textSize="14sp"
-                            android:textColor="@color/g6" />
-                    </LinearLayout>
-
-                    <!-- 카테고리 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:paddingBottom="12dp">
-
-                        <TextView
-                            android:layout_width="80dp"
-                            android:layout_height="wrap_content"
-                            android:text="카테고리"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/g6" />
-
-                        <TextView
-                            android:id="@+id/tvDetailCategory"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="문학"
-                            android:textSize="14sp"
-                            android:textColor="@color/black" />
-                    </LinearLayout>
-
-                    <!-- 공개 여부 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:paddingBottom="16dp">
-
-                        <TextView
-                            android:layout_width="80dp"
-                            android:layout_height="wrap_content"
-                            android:text="공개 여부"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/g6" />
-
-                        <TextView
-                            android:id="@+id/tvDetailPrivate"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="공개"
-                            android:textSize="14sp"
-                            android:textColor="@color/black" />
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/deep_gray"
-                        android:layout_marginBottom="16dp" />
-
-                    <!-- 감상평 -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="감상평"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/black"
-                        android:paddingBottom="12dp" />
-
-                    <TextView
-                        android:id="@+id/tvDetailReview"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="여기에 감상평이 표시됩니다."
-                        android:textSize="14sp"
-                        android:textColor="@color/font_main"
-                        android:lineSpacingExtra="4dp" />
                 </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/deep_gray"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- 날짜 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingBottom="12dp">
+
+                    <TextView
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:text="날짜"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/g6" />
+
+                    <TextView
+                        android:id="@+id/tvDetailDate"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="2025년 11월 19일"
+                        android:textSize="14sp"
+                        android:textColor="@color/black" />
+                </LinearLayout>
+
+                <!-- 페이지 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingBottom="12dp">
+
+                    <TextView
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:text="페이지"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/g6" />
+
+                    <TextView
+                        android:id="@+id/tvDetailPage"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="1 ~ 100 페이지"
+                        android:textSize="14sp"
+                        android:textColor="@color/black" />
+                </LinearLayout>
+
+                <!-- 상태 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingBottom="12dp">
+
+                    <TextView
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:text="상태"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/g6" />
+
+                    <TextView
+                        android:id="@+id/tvDetailStatus"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="읽는중"
+                        android:textSize="14sp"
+                        android:textColor="@color/g6" />
+                </LinearLayout>
+
+                <!-- 카테고리 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingBottom="12dp">
+
+                    <TextView
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:text="카테고리"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/g6" />
+
+                    <TextView
+                        android:id="@+id/tvDetailCategory"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="문학"
+                        android:textSize="14sp"
+                        android:textColor="@color/black" />
+                </LinearLayout>
+
+                <!-- 공개 여부 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingBottom="16dp">
+
+                    <TextView
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:text="공개 여부"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/g6" />
+
+                    <TextView
+                        android:id="@+id/tvDetailPrivate"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="공개"
+                        android:textSize="14sp"
+                        android:textColor="@color/black" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/deep_gray"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- 감상평 -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="감상평"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    android:paddingBottom="12dp" />
+
+                <TextView
+                    android:id="@+id/tvDetailReview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="여기에 감상평이 표시됩니다."
+                    android:textSize="14sp"
+                    android:textColor="@color/font_main"
+                    android:lineSpacingExtra="4dp" />
+            </LinearLayout>
 
             <!-- 버튼 영역 -->
             <LinearLayout
@@ -316,30 +310,29 @@
 
                 <Button
                     android:id="@+id/btnEditRecord"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="0dp"
-                    android:layout_height="48dp"
+                    android:layout_height="60dp"
                     android:layout_weight="1"
                     android:layout_marginEnd="8dp"
                     android:text="수정"
                     android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:strokeColor="@color/g6"
-                    app:strokeWidth="2dp" />
+                    android:fontFamily="@font/pretendard_semibold"
+                    android:textColor="@color/g1"
+                    android:backgroundTint="@color/g7"
+                   />
 
                 <Button
                     android:id="@+id/btnDeleteRecord"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="0dp"
-                    android:layout_height="48dp"
+                    android:layout_height="60dp"
                     android:layout_weight="1"
                     android:layout_marginStart="8dp"
                     android:text="삭제"
                     android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:strokeColor="#E57373"
-                    android:textColor="#E57373"
-                    app:strokeWidth="2dp" />
+                    android:fontFamily="@font/pretendard_semibold"
+                    android:backgroundTint="@color/g1"
+                    android:textColor="@color/g7"
+                     />
             </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

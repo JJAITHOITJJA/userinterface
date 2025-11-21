@@ -54,21 +54,18 @@ public class BookRecordAdapter extends RecyclerView.Adapter<BookRecordAdapter.Bo
             if (record.getCoverImageUrl() != null && !record.getCoverImageUrl().isEmpty()) {
                 Glide.with(ivBookCover.getContext())
                         .load(record.getCoverImageUrl())
-                        .placeholder(R.drawable.ic_book_placeholder)
-                        .error(R.drawable.ic_book_error)
+                        .error(R.drawable.sayhello)  // placeholder 제거
                         .into(ivBookCover);
             } else if (record.getCoverImage() != 0) {
                 ivBookCover.setImageResource(record.getCoverImage());
             }
 
-            // 아이템 클릭 리스너
             itemView.setOnClickListener(v -> {
                 if (listener != null) {
                     listener.onItemClick(record);
                 }
             });
-        }
-    }
+        }    }
 
     @NonNull
     @Override

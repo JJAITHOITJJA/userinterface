@@ -162,7 +162,12 @@ public class HomeFragment extends Fragment {
     }
 
     private void onFeedItemClick(FeedItem item) {
-        // TODO: 피드 아이템 클릭 시 상세 페이지 이동
+        // RecordDetailFragment로 이동
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("feed_item", item);
+
+        NavController navController = NavHostFragment.findNavController(this);
+        navController.navigate(R.id.action_homeFragment_to_recordDetailFragment, bundle);
     }
 
     private void onFeedItemLongClick(FeedItem item) {

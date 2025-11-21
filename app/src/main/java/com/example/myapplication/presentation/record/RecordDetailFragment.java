@@ -1,13 +1,16 @@
 package com.example.myapplication.presentation.record;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -15,6 +18,9 @@ import com.example.myapplication.R;
 import com.example.myapplication.data.home.FeedItem;
 import com.example.myapplication.databinding.FragmentRecordDetailBinding;
 import com.example.myapplication.presentation.MainActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -22,9 +28,15 @@ import java.util.Locale;
 
 public class RecordDetailFragment extends Fragment {
 
+    private static final String TAG = "RecordDetailFragment";
+
     private FragmentRecordDetailBinding binding;
     private FeedItem feedItem;
     private ImageView[] stars;
+
+    // Firebase
+    private FirebaseFirestore db;
+    private FirebaseAuth auth;
 
     @Nullable
     @Override
@@ -39,6 +51,10 @@ public class RecordDetailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ((MainActivity) requireActivity()).hideBottom();
+
+        // Firebase 초기화
+        db = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
 
         // Bundle에서 FeedItem 받기
         if (getArguments() != null) {
@@ -62,8 +78,7 @@ public class RecordDetailFragment extends Fragment {
         if (feedItem.getCoverImageUrl() != null && !feedItem.getCoverImageUrl().isEmpty()) {
             Glide.with(this)
                     .load(feedItem.getCoverImageUrl())
-                    .placeholder(R.drawable.ic_book_placeholder)
-                    .error(R.drawable.ic_book_error)
+                    .error(R.drawable.sayhello)
                     .into(binding.ivDetailBookCover);
         } else if (feedItem.getCoverImage() != 0) {
             binding.ivDetailBookCover.setImageResource(feedItem.getCoverImage());
@@ -136,14 +151,115 @@ public class RecordDetailFragment extends Fragment {
     private void setupEditButton() {
         binding.btnEditRecord.setOnClickListener(v -> {
             // TODO: 수정 기능 구현
-            // RecordEditFragment로 이동
+            Toast.makeText(getContext(), "수정 기능은 준비 중입니다", Toast.LENGTH_SHORT).show();
         });
     }
 
     private void setupDeleteButton() {
         binding.btnDeleteRecord.setOnClickListener(v -> {
-            // TODO: 삭제 확인 다이얼로그 표시 후 삭제
+            showDeleteDialog();
         });
+    }
+
+    private void showDeleteDialog() {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("기록 삭제")
+                .setMessage("이 기록을 삭제하시겠습니까?")
+                .setPositiveButton("삭제", (dialog, which) -> {
+                    deleteRecord();
+                })
+                .setNegativeButton("취소", (dialog, which) -> {
+                    dialog.dismiss();
+                })
+                .show();
+    }
+
+    private void deleteRecord() {
+        FirebaseUser currentUser = auth.getCurrentUser();
+        if (currentUser == null) {
+            Toast.makeText(getContext(), "로그인이 필요합니다", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String userId = currentUser.getUid();
+        String recordId = feedItem.getId(); // FeedItem의 ID가 record ID
+
+        // Firebase에서 record 삭제
+        db.collection("users")
+                .document(userId)
+                .collection("records")
+                .document(recordId)
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "Record 삭제 성공: " + recordId);
+
+                    // 해당 ISBN의 다른 records가 있는지 확인
+                    checkAndUpdateBook(userId, feedItem.getId());
+
+                    Toast.makeText(getContext(), "기록이 삭제되었습니다", Toast.LENGTH_SHORT).show();
+
+                    // 이전 화면으로 돌아가기
+                    if (getActivity() != null) {
+                        getActivity().onBackPressed();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Record 삭제 실패", e);
+                    Toast.makeText(getContext(), "삭제에 실패했습니다", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void checkAndUpdateBook(String userId, String isbn) {
+        // 해당 ISBN의 남은 records 개수 확인
+        db.collection("users")
+                .document(userId)
+                .collection("records")
+                .whereEqualTo("isbn", isbn)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (queryDocumentSnapshots.isEmpty()) {
+                        // 남은 record가 없으면 book도 삭제
+                        db.collection("users")
+                                .document(userId)
+                                .collection("books")
+                                .document(isbn)
+                                .delete()
+                                .addOnSuccessListener(aVoid -> {
+                                    Log.d(TAG, "Book도 삭제됨: " + isbn);
+                                })
+                                .addOnFailureListener(e -> {
+                                    Log.e(TAG, "Book 삭제 실패", e);
+                                });
+                    } else {
+                        // 남은 record가 있으면 lastRecordDate 업데이트
+                        // 가장 최근 record의 날짜를 찾아서 업데이트
+                        String latestDate = "";
+                        for (int i = 0; i < queryDocumentSnapshots.size(); i++) {
+                            String date = queryDocumentSnapshots.getDocuments().get(i).getString("date");
+                            if (date != null && date.compareTo(latestDate) > 0) {
+                                latestDate = date;
+                            }
+                        }
+
+                        if (!latestDate.isEmpty()) {
+                            final String finalDate = latestDate;
+                            db.collection("users")
+                                    .document(userId)
+                                    .collection("books")
+                                    .document(isbn)
+                                    .update("lastRecordDate", finalDate)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Log.d(TAG, "Book의 lastRecordDate 업데이트 성공");
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e(TAG, "Book 업데이트 실패", e);
+                                    });
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Records 조회 실패", e);
+                });
     }
 
     @Override
