@@ -146,11 +146,13 @@ public class CalendarFragment extends Fragment {
         bundle.putParcelable("feed_item", item);
         detailFragment.setArguments(bundle);
 
-        // Fragment 교체
-        getParentFragmentManager().beginTransaction()
-                .replace(R.id.nav_host_fragment_container, detailFragment)
-                .addToBackStack(null)
-                .commit();
+        Fragment parentFragment = getParentFragment();
+        if (parentFragment != null) {
+            parentFragment.getChildFragmentManager().beginTransaction()
+                    .replace(R.id.child_fragment_container, detailFragment)
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
 
     // 필터 버튼 설정

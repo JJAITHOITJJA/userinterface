@@ -137,10 +137,13 @@ public class BookListFragment extends Fragment {
         bundle.putParcelable("feed_item", item);
         detailFragment.setArguments(bundle);
 
-        requireActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.nav_host_fragment_container, detailFragment)
-                .addToBackStack(null)
-                .commit();
+        Fragment parentFragment = getParentFragment();
+        if (parentFragment != null) {
+            parentFragment.getChildFragmentManager().beginTransaction()
+                    .replace(R.id.child_fragment_container, detailFragment)
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
 
     @Override
