@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,10 +32,13 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class GroupCreateFragment extends Fragment {
@@ -154,6 +158,12 @@ public class GroupCreateFragment extends Fragment {
         mateAdapter.submitList(Collections.emptyList());
 
     }
+    private String getCurrentDateAsString() {
+        Date currentDate = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        String formattedDateString = formatter.format(currentDate);
+        return formattedDateString;
+    }
 
     private void createGroup(){
         String groupName = binding.etGroupName.getText().toString();
@@ -173,7 +183,7 @@ public class GroupCreateFragment extends Fragment {
         group.put("peopleNumber", maxPeople);
         group.put("isLiterature", isLiterature);
         group.put("isLocked", isLocked);
-        group.put("startDate", FieldValue.serverTimestamp().toString());
+        group.put("startDate", getCurrentDateAsString());
 
         group.put("discussionList", new ArrayList<>());
 
@@ -205,10 +215,7 @@ public class GroupCreateFragment extends Fragment {
                         Log.e(TAG, "Firestore save failed: " + e.getMessage());
                     }
                 });
-
-
-
-
+        Toast.makeText(getContext(), "그룹 생성 완료", Toast.LENGTH_SHORT).show();
 
     }
 

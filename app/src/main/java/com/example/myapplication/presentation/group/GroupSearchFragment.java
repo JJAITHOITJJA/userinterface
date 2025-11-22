@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myapplication.data.OnItemClickListener;
+import com.example.myapplication.data.OnItemLongClickListener;
 import com.example.myapplication.data.group.GroupItem;
 import com.example.myapplication.databinding.FragmentGroupSearchBinding;
 import com.google.firebase.auth.FirebaseAuth;
@@ -127,6 +128,11 @@ public class GroupSearchFragment extends Fragment {
                     // 2. 잠겨있지 않으면 바로 입장
                     navigateToGroupInside(item.getGroupId());
                 }
+
+            }
+        }, new OnItemLongClickListener<GroupItem>() {
+            @Override
+            public void onItemLongClick(GroupItem item, int position) {
 
             }
         });

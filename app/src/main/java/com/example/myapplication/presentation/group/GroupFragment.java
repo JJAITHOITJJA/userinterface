@@ -19,16 +19,21 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.myapplication.R;
 import com.example.myapplication.data.OnItemClickListener;
+import com.example.myapplication.data.OnItemLongClickListener;
+import com.example.myapplication.data.group.DiscussionItem;
 import com.example.myapplication.data.group.GroupItem;
 import com.example.myapplication.databinding.FragmentGroupBinding;
+import com.example.myapplication.presentation.group.discussion.DiscussionAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class GroupFragment extends Fragment {
 
@@ -91,11 +96,88 @@ public class GroupFragment extends Fragment {
                 bundle.putString("groupId", groupId);
                 navController.navigate(R.id.action_groupFragment_to_groupInsideFragment, bundle);
             }
+        }, new OnItemLongClickListener<GroupItem>() {
+            @Override
+            public void onItemLongClick(GroupItem item, int position) {
+                showDeleteDialog(item);
+            }
         });
+
         binding.rvMygroupList.setAdapter(adapter);
         binding.rvMygroupList.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
+    private void showDeleteDialog(GroupItem item){
+        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle("그룹 삭제")
+                .setMessage("'" + item.getName() + "' 토론을 삭제하시겠습니까?")
+                .setPositiveButton("삭제", (dialog, which) -> {
+                    deleteGroup(item.getGroupId());
+                })
+                .setNegativeButton("취소", null)
+                .show();
+    }
+
+    private void deleteGroup(String groupId) {
+        db.collection("group").document(groupId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        List<String> members = (List<String>) documentSnapshot.get("members");
+
+                        if (members == null || members.isEmpty()) {
+                            db.collection("group").document(groupId)
+                                    .delete()
+                                    .addOnSuccessListener(aVoid -> {
+                                        android.widget.Toast.makeText(requireContext(), "그룹이 성공적으로 삭제되었습니다.", android.widget.Toast.LENGTH_SHORT).show();
+                                        loadGroupData();
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        android.widget.Toast.makeText(requireContext(), "그룹 삭제에 실패했습니다.", android.widget.Toast.LENGTH_SHORT).show();
+                                    });
+                            return;
+                        }
+
+                        AtomicInteger membersUpdated = new AtomicInteger(0);
+                        int totalMembers = members.size();
+
+                        for (String memberId : members) {
+                            db.collection("users").document(memberId)
+                                    .update("groupList", FieldValue.arrayRemove(groupId))
+                                    .addOnSuccessListener(aVoid -> {
+                                        if (membersUpdated.incrementAndGet() == totalMembers) {
+                                            db.collection("group").document(groupId)
+                                                    .delete()
+                                                    .addOnSuccessListener(aVoid2 -> {
+                                                        android.widget.Toast.makeText(requireContext(), "그룹이 성공적으로 삭제되었습니다.", android.widget.Toast.LENGTH_SHORT).show();
+                                                        loadGroupData();
+                                                    })
+                                                    .addOnFailureListener(e -> {
+                                                        android.widget.Toast.makeText(requireContext(), "그룹 삭제에 실패했습니다.", android.widget.Toast.LENGTH_SHORT).show();
+                                                    });
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        if (membersUpdated.incrementAndGet() == totalMembers) {
+                                            db.collection("group").document(groupId)
+                                                    .delete()
+                                                    .addOnSuccessListener(aVoid2 -> {
+                                                        android.widget.Toast.makeText(requireContext(), "그룹이 성공적으로 삭제되었습니다.", android.widget.Toast.LENGTH_SHORT).show();
+                                                        loadGroupData();
+                                                    })
+                                                    .addOnFailureListener(e2 -> {
+                                                        android.widget.Toast.makeText(requireContext(), "그룹 삭제에 실패했습니다.", android.widget.Toast.LENGTH_SHORT).show();
+                                                    });
+                                        }
+                                    });
+                        }
+                    } else {
+                        android.widget.Toast.makeText(requireContext(), "삭제하려는 그룹을 찾을 수 없습니다.", android.widget.Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    android.widget.Toast.makeText(requireContext(), "그룹 삭제에 실패했습니다.", android.widget.Toast.LENGTH_SHORT).show();
+                });
+    }
     private void loadGroupData(){
         List<GroupItem> groupList = new ArrayList<>();
         String currentUserId = user.getUid();

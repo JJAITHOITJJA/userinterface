@@ -22,6 +22,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.example.myapplication.data.OnItemClickListener;
 import com.example.myapplication.R;
+import com.example.myapplication.data.OnItemLongClickListener;
 import com.example.myapplication.data.group.DiscussionItem;
 import com.example.myapplication.data.onmate.AddMateItem;
 import com.example.myapplication.databinding.FragmentGroupInsideBinding;
@@ -293,7 +294,7 @@ public class GroupInsideFragment extends Fragment {
 
     private void initDiscussionAdapter(){
         discussionAdapter = new DiscussionAdapter();
-        discussionAdapter.setOnItemClickListener(new OnItemClickListener<DiscussionItem>(){
+        discussionAdapter.setOnItemClickListener(new OnItemClickListener<DiscussionItem>() {
             @Override
             public void onItemClick(DiscussionItem item, int position) {
                 Log.d("GroupInsideFragment", "토론 항목 클릭: ID " + item.getDiscussionId());
@@ -306,14 +307,13 @@ public class GroupInsideFragment extends Fragment {
                 navController.navigate(R.id.action_groupInsideFragment_to_groupDiscussionFragment, bundle);
             }
 
-        });
-
-        discussionAdapter.setOnItemLongClickListener(new DiscussionAdapter.OnItemLongClickListener<DiscussionItem>(){
+        }, new OnItemLongClickListener<DiscussionItem>() {
             @Override
             public void onItemLongClick(DiscussionItem item, int position) {
                 showDeleteDialog(item);
             }
         });
+
         binding.rvDiscussionList.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.rvDiscussionList.setAdapter(discussionAdapter);
         discussionAdapter.submitList(Collections.emptyList());
@@ -336,13 +336,10 @@ public class GroupInsideFragment extends Fragment {
         db.collection("group").document(groupId)
                 .update("discussionList", FieldValue.arrayRemove(discussionId))
                 .addOnSuccessListener(aVoid -> {
-                    Log.d("GroupInsideFragment", "토론 ID가 그룹에서 제거됨: " + discussionId);
 
-                    // 2. discussion 문서 삭제
                     db.collection("discussion").document(discussionId)
                             .delete()
                             .addOnSuccessListener(aVoid2 -> {
-                                Log.d("GroupInsideFragment", "토론 문서 삭제 성공: " + discussionId);
                                 android.widget.Toast.makeText(requireContext(),
                                         "토론이 삭제되었습니다",
                                         android.widget.Toast.LENGTH_SHORT).show();
@@ -351,14 +348,12 @@ public class GroupInsideFragment extends Fragment {
                                 loadGroupInfo();
                             })
                             .addOnFailureListener(e -> {
-                                Log.e("GroupInsideFragment", "토론 문서 삭제 실패", e);
                                 android.widget.Toast.makeText(requireContext(),
                                         "토론 삭제에 실패했습니다",
                                         android.widget.Toast.LENGTH_SHORT).show();
                             });
                 })
                 .addOnFailureListener(e -> {
-                    Log.e("GroupInsideFragment", "그룹에서 토론 ID 제거 실패", e);
                     android.widget.Toast.makeText(requireContext(),
                             "토론 삭제에 실패했습니다",
                             android.widget.Toast.LENGTH_SHORT).show();

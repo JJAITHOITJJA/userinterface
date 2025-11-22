@@ -14,25 +14,22 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.data.OnItemClickListener;
+import com.example.myapplication.data.OnItemLongClickListener;
 import com.example.myapplication.data.group.DiscussionItem;
 
 import org.jspecify.annotations.NonNull;
 
 public class DiscussionAdapter extends ListAdapter<DiscussionItem, DiscussionAdapter.DiscussionViewHolder> {
 
-    public interface OnItemLongClickListener<T> {
-        void onItemLongClick(T item, int position);
-    }
     private OnItemClickListener<DiscussionItem> listener = null;
     private OnItemLongClickListener<DiscussionItem> longClickListener = null;
 
-    public void setOnItemClickListener(OnItemClickListener<DiscussionItem> listener){
+    public void setOnItemClickListener(OnItemClickListener<DiscussionItem> listener,
+                                       OnItemLongClickListener<DiscussionItem> longClickListener){
         this.listener = listener;
+        this.longClickListener = longClickListener;
     }
 
-    public void setOnItemLongClickListener(OnItemLongClickListener<DiscussionItem> listener){
-        this.longClickListener = listener;
-    }
 
     public DiscussionAdapter(){
         super(new DiscussionAdapter.DiscussionItemDiffCallback());
