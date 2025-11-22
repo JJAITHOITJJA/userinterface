@@ -16,17 +16,27 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.data.OnItemClickListener;
+import com.example.myapplication.data.OnItemLongClickListener;
+import com.example.myapplication.data.group.DiscussionItem;
 import com.example.myapplication.data.group.GroupItem;
+import com.example.myapplication.presentation.group.discussion.DiscussionAdapter;
 
 
 public class GroupAdapter extends ListAdapter<GroupItem, GroupAdapter.GroupViewHolder> {
 
     private OnItemClickListener<GroupItem> listener= null;
+    private OnItemLongClickListener<GroupItem> longClickListener = null;
 
-    public GroupAdapter(OnItemClickListener<GroupItem> listener) { // 💡 생성자에서 리스너를 받음
+    public GroupAdapter(OnItemClickListener<GroupItem> listener, OnItemLongClickListener<GroupItem> groupListener) { // 💡 생성자에서 리스너를 받음
         super(new GroupItemDiffCallback());
         this.listener = listener;
+        this.longClickListener= groupListener;
     }
+
+    public void setOnItemLongClickListener(OnItemLongClickListener<GroupItem> listener){
+        this.longClickListener = listener;
+    }
+
     public GroupAdapter() {
         super(new GroupItemDiffCallback());
     }
@@ -103,6 +113,14 @@ public class GroupAdapter extends ListAdapter<GroupItem, GroupAdapter.GroupViewH
             if (listener != null && holder.getAdapterPosition() != RecyclerView.NO_POSITION) {
                 listener.onItemClick(getItem(holder.getAdapterPosition()), holder.getAdapterPosition());
             }
+        });
+
+        holder.itemView.setOnLongClickListener(v->{
+            if(longClickListener != null && holder.getAdapterPosition() != RecyclerView.NO_POSITION){
+                longClickListener.onItemLongClick(getItem(holder.getAdapterPosition()), holder.getAdapterPosition());
+                return true;
+            }
+            return false;
         });
     }
 }

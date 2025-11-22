@@ -8,9 +8,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -20,6 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.example.myapplication.R;
 import com.example.myapplication.data.onmate.AddMateItem;
 import com.example.myapplication.databinding.FragmentGroupCreateBinding;
+import com.example.myapplication.presentation.MainActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,10 +32,13 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class GroupCreateFragment extends Fragment {
@@ -67,6 +75,23 @@ public class GroupCreateFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         initAddMateAdapter();
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            Insets navigationBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
+
+            int extraPaddingTop = 3;
+
+            // 하단 패딩을 navigationBars.bottom으로 설정하여 네비게이션 바 위로 올림
+            v.setPadding(
+                    systemBars.left,
+                    0,
+                    systemBars.right,
+                    navigationBars.bottom  // 시스템 네비게이션 바 높이만큼 패딩
+            );
+            v.post(() -> ((MainActivity) requireActivity()).hideBottom());
+            return insets;
+        });
 
         viewModel = new ViewModelProvider(requireActivity()).get(
                 AddMateViewModel.class);
@@ -133,6 +158,12 @@ public class GroupCreateFragment extends Fragment {
         mateAdapter.submitList(Collections.emptyList());
 
     }
+    private String getCurrentDateAsString() {
+        Date currentDate = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        String formattedDateString = formatter.format(currentDate);
+        return formattedDateString;
+    }
 
     private void createGroup(){
         String groupName = binding.etGroupName.getText().toString();
@@ -152,7 +183,7 @@ public class GroupCreateFragment extends Fragment {
         group.put("peopleNumber", maxPeople);
         group.put("isLiterature", isLiterature);
         group.put("isLocked", isLocked);
-        group.put("startDate", FieldValue.serverTimestamp());
+        group.put("startDate", getCurrentDateAsString());
 
         group.put("discussionList", new ArrayList<>());
 
@@ -184,10 +215,7 @@ public class GroupCreateFragment extends Fragment {
                         Log.e(TAG, "Firestore save failed: " + e.getMessage());
                     }
                 });
-
-
-
-
+        Toast.makeText(getContext(), "그룹 생성 완료", Toast.LENGTH_SHORT).show();
 
     }
 

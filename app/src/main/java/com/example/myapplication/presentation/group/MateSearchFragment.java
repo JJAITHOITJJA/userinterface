@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -156,7 +157,9 @@ public class MateSearchFragment extends Fragment {
                             String nickname = document.getString("nickname");
                             String profileImageUrl = document.getString("profileImageUrl");
                             AddMateItem myMate = new AddMateItem(nickname, myId, profileImageUrl);
-                            viewModel.addMateToSelection(myMate);
+                            if (!viewModel.addMateToSelection(myMate)){
+                                Toast.makeText(requireContext(), "이미 추가된 메이트입니다", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     }
                 });

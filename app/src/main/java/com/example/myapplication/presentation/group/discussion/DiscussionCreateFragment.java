@@ -99,7 +99,7 @@ public class DiscussionCreateFragment extends Fragment {
 
             v.setPadding(
                     systemBars.left,
-                    systemBars.top + dpToPx(v.getContext(), extraPaddingTop),
+                    0,
                     systemBars.right,
                     navigationBars.bottom  // 시스템 네비게이션 바 높이만큼 패딩
             );

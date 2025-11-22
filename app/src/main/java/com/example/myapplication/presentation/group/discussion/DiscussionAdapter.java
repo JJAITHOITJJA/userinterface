@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.data.OnItemClickListener;
+import com.example.myapplication.data.OnItemLongClickListener;
 import com.example.myapplication.data.group.DiscussionItem;
 
 import org.jspecify.annotations.NonNull;
@@ -21,14 +22,19 @@ import org.jspecify.annotations.NonNull;
 public class DiscussionAdapter extends ListAdapter<DiscussionItem, DiscussionAdapter.DiscussionViewHolder> {
 
     private OnItemClickListener<DiscussionItem> listener = null;
+    private OnItemLongClickListener<DiscussionItem> longClickListener = null;
 
-    public void setOnItemClickListener(OnItemClickListener<DiscussionItem> listener){
+    public void setOnItemClickListener(OnItemClickListener<DiscussionItem> listener,
+                                       OnItemLongClickListener<DiscussionItem> longClickListener){
         this.listener = listener;
+        this.longClickListener = longClickListener;
     }
+
 
     public DiscussionAdapter(){
         super(new DiscussionAdapter.DiscussionItemDiffCallback());
     }
+
     public DiscussionAdapter(OnItemClickListener<DiscussionItem> listener){
         super(new DiscussionAdapter.DiscussionItemDiffCallback());
         this.listener= listener;
@@ -49,9 +55,18 @@ public class DiscussionAdapter extends ListAdapter<DiscussionItem, DiscussionAda
         holder.bind(item);
 
         holder.itemView.setOnClickListener(v->{
-            if(listener!= null&& holder.getAdapterPosition() != RecyclerView.NO_POSITION){
+            if(listener != null && holder.getAdapterPosition() != RecyclerView.NO_POSITION){
                 listener.onItemClick(getItem(holder.getAdapterPosition()), holder.getAdapterPosition());
             }
+        });
+
+        // 길게 누르기 리스너 추가
+        holder.itemView.setOnLongClickListener(v->{
+            if(longClickListener != null && holder.getAdapterPosition() != RecyclerView.NO_POSITION){
+                longClickListener.onItemLongClick(getItem(holder.getAdapterPosition()), holder.getAdapterPosition());
+                return true;
+            }
+            return false;
         });
     }
 

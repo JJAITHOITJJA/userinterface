@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myapplication.data.OnItemClickListener;
+import com.example.myapplication.data.OnItemLongClickListener;
 import com.example.myapplication.data.group.GroupItem;
 import com.example.myapplication.databinding.FragmentGroupSearchBinding;
 import com.google.firebase.auth.FirebaseAuth;
@@ -129,6 +130,11 @@ public class GroupSearchFragment extends Fragment {
                 }
 
             }
+        }, new OnItemLongClickListener<GroupItem>() {
+            @Override
+            public void onItemLongClick(GroupItem item, int position) {
+
+            }
         });
         binding.rvSearchList.setAdapter(adapter);
         binding.rvSearchList.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -196,46 +202,63 @@ public class GroupSearchFragment extends Fragment {
         super.onDestroyView();
         binding = null;
     }
-
     private void searchGroupByOption(String keyword, boolean isLiterature, boolean isNonLiterature){
         binding.loadingOverlay.setVisibility(View.VISIBLE);
         binding.rvSearchList.setVisibility(View.GONE);
 
         List<GroupItem> groupList = new ArrayList<>();
 
-        Query query = db.collection("group");
-        if (keyword != null && !keyword.trim().isEmpty()) {
-            String trimmedKeyword = keyword.trim();
-            String endKeyword = trimmedKeyword + "\uf8ff";
+        String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        db.collection("users").document(currentUserId).get()
+                .addOnSuccessListener(userDoc -> {
+                    List<String> userGroupIds = new ArrayList<>();
+                    if(userDoc.exists() && userDoc.contains("groupList")){
+                        userGroupIds = (List<String>) userDoc.get("groupList");
+                    }
 
-            query = query.whereGreaterThanOrEqualTo("name", trimmedKeyword)
-                    .whereLessThan("name", endKeyword);
-        }
+                    Query query = db.collection("group");
 
-        if(isLiterature && isNonLiterature){
-        }
-        else if(isLiterature){
-            query = query.whereEqualTo("isLiterature", true);
-        }
-        else if(isNonLiterature){
-            query = query.whereEqualTo("isLiterature", false);
-        }
+                    if(isLiterature && !isNonLiterature){
+                        query = query.whereEqualTo("isLiterature", true);
+                    }
+                    else if(!isLiterature && isNonLiterature){
+                        query = query.whereEqualTo("isLiterature", false);
+                    }
 
-        query.get().addOnCompleteListener( task -> {
-            if(task.isSuccessful()){
-                for(QueryDocumentSnapshot document: task.getResult()){
-                    GroupItem item = document.toObject(GroupItem.class);
-                    item.setGroupId(document.getId());
-                    groupList.add(item);
-                }
+                    List<String> finalUserGroupIds = userGroupIds;
+                    query.get().addOnCompleteListener(task -> {
+                        if(task.isSuccessful()){
+                            String searchKeyword = (keyword != null && !keyword.trim().isEmpty())
+                                    ? keyword.trim().toLowerCase() : null;
 
-                adapter.submitList(groupList);
-                binding.loadingOverlay.setVisibility(View.GONE);
-                binding.rvSearchList.setVisibility(View.VISIBLE);
-            } else {
-                // 오류 처리
-                binding.loadingOverlay.setVisibility(View.GONE);
-            }
-        });
+                            for(QueryDocumentSnapshot document: task.getResult()){
+                                String groupId = document.getId();
+
+                                if(finalUserGroupIds != null && finalUserGroupIds.contains(groupId)){
+                                    continue;
+                                }
+                                GroupItem item = document.toObject(GroupItem.class);
+                                item.setGroupId(groupId);
+
+                                if(searchKeyword == null ||
+                                        item.getName().toLowerCase().contains(searchKeyword)){
+                                    groupList.add(item);
+                                }
+                            }
+
+                            adapter.submitList(groupList);
+                            binding.loadingOverlay.setVisibility(View.GONE);
+                            binding.rvSearchList.setVisibility(View.VISIBLE);
+                        } else {
+                            Toast.makeText(getContext(), "검색 중 오류가 발생했습니다", Toast.LENGTH_SHORT).show();
+                            binding.loadingOverlay.setVisibility(View.GONE);
+                            binding.rvSearchList.setVisibility(View.VISIBLE);
+                        }
+                    });
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(getContext(), "사용자 정보를 불러오는데 실패했습니다", Toast.LENGTH_SHORT).show();
+                    binding.loadingOverlay.setVisibility(View.GONE);
+                });
     }
 }

@@ -22,6 +22,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.example.myapplication.data.OnItemClickListener;
 import com.example.myapplication.R;
+import com.example.myapplication.data.OnItemLongClickListener;
 import com.example.myapplication.data.group.DiscussionItem;
 import com.example.myapplication.data.onmate.AddMateItem;
 import com.example.myapplication.databinding.FragmentGroupInsideBinding;
@@ -87,7 +88,7 @@ public class GroupInsideFragment extends Fragment {
             // 하단 패딩을 navigationBars.bottom으로 설정하여 네비게이션 바 위로 올림
             v.setPadding(
                     systemBars.left,
-                    systemBars.top + dpToPx(v.getContext(), extraPaddingTop),
+                    0,
                     systemBars.right,
                     navigationBars.bottom  // 시스템 네비게이션 바 높이만큼 패딩
             );
@@ -293,7 +294,7 @@ public class GroupInsideFragment extends Fragment {
 
     private void initDiscussionAdapter(){
         discussionAdapter = new DiscussionAdapter();
-        discussionAdapter.setOnItemClickListener(new OnItemClickListener<DiscussionItem>(){
+        discussionAdapter.setOnItemClickListener(new OnItemClickListener<DiscussionItem>() {
             @Override
             public void onItemClick(DiscussionItem item, int position) {
                 Log.d("GroupInsideFragment", "토론 항목 클릭: ID " + item.getDiscussionId());
@@ -306,10 +307,56 @@ public class GroupInsideFragment extends Fragment {
                 navController.navigate(R.id.action_groupInsideFragment_to_groupDiscussionFragment, bundle);
             }
 
+        }, new OnItemLongClickListener<DiscussionItem>() {
+            @Override
+            public void onItemLongClick(DiscussionItem item, int position) {
+                showDeleteDialog(item);
+            }
         });
+
         binding.rvDiscussionList.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.rvDiscussionList.setAdapter(discussionAdapter);
         discussionAdapter.submitList(Collections.emptyList());
         Log.d("GroupInsideFragment", "initDiscussionAdapter 실행");
+    }
+
+    private void showDeleteDialog(DiscussionItem item){
+        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle("토론 삭제")
+                .setMessage("'" + item.getBookName() + "' 토론을 삭제하시겠습니까?")
+                .setPositiveButton("삭제", (dialog, which) -> {
+                    deleteDiscussion(item.getDiscussionId());
+                })
+                .setNegativeButton("취소", null)
+                .show();
+    }
+
+    private void deleteDiscussion(String discussionId){
+        // 1. group 문서에서 discussionList 업데이트
+        db.collection("group").document(groupId)
+                .update("discussionList", FieldValue.arrayRemove(discussionId))
+                .addOnSuccessListener(aVoid -> {
+
+                    db.collection("discussion").document(discussionId)
+                            .delete()
+                            .addOnSuccessListener(aVoid2 -> {
+                                android.widget.Toast.makeText(requireContext(),
+                                        "토론이 삭제되었습니다",
+                                        android.widget.Toast.LENGTH_SHORT).show();
+
+                                // 3. UI 새로고침
+                                loadGroupInfo();
+                            })
+                            .addOnFailureListener(e -> {
+                                android.widget.Toast.makeText(requireContext(),
+                                        "토론 삭제에 실패했습니다",
+                                        android.widget.Toast.LENGTH_SHORT).show();
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    android.widget.Toast.makeText(requireContext(),
+                            "토론 삭제에 실패했습니다",
+                            android.widget.Toast.LENGTH_SHORT).show();
+                });
     }
 }
