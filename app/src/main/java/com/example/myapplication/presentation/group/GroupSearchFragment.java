@@ -5,6 +5,9 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -26,6 +29,7 @@ import com.example.myapplication.data.OnItemClickListener;
 import com.example.myapplication.data.OnItemLongClickListener;
 import com.example.myapplication.data.group.GroupItem;
 import com.example.myapplication.databinding.FragmentGroupSearchBinding;
+import com.example.myapplication.presentation.MainActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FieldValue;
@@ -76,6 +80,21 @@ public class GroupSearchFragment extends Fragment {
         initAdapter();
         navController = NavHostFragment.findNavController(this);
 
+        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            Insets navigationBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
+
+
+            // 하단 패딩을 navigationBars.bottom으로 설정하여 네비게이션 바 위로 올림
+            v.setPadding(
+                    systemBars.left,
+                    0,
+                    systemBars.right,
+                    navigationBars.bottom  // 시스템 네비게이션 바 높이만큼 패딩
+            );
+            v.post(() -> ((MainActivity) requireActivity()).hideBottom());
+            return insets;
+        });
 
         binding.fabGroupCreate.setOnClickListener(v -> {
             navController.navigate(R.id.action_groupSearchFragment_to_groupCreateFragment);
@@ -200,6 +219,7 @@ public class GroupSearchFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        ((MainActivity) requireActivity()).showBottom();
         binding = null;
     }
     private void searchGroupByOption(String keyword, boolean isLiterature, boolean isNonLiterature){

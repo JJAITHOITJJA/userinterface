@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
@@ -377,20 +378,47 @@ public class GroupBookFragment extends Fragment {
         String content = binding.etComment.getText().toString();
         String userId= user.getUid();
         String page= binding.etPageInput.getText().toString();
-        Long pageNumber = Long.parseLong(page);
 
+        // 1. 입력값 Null/Empty 검증 (가장 먼저 실행)
+        if (content.trim().isEmpty()) {
+            Toast.makeText(requireContext(), "댓글 내용을 입력해주세요.",Toast.LENGTH_SHORT).show();
+            return;
+        }
 
+        if (page.trim().isEmpty()) { // .isEmpty() 대신 .trim().isEmpty() 사용
+            Toast.makeText(requireContext(), "페이지 번호를 입력해주세요.",Toast.LENGTH_SHORT).show();
+            return; // 함수 실행 중단
+        }
+
+        // 2. Long 변환 및 NumberFormatException 처리
+        Long pageNumber;
+        try {
+            pageNumber = Long.parseLong(page);
+        } catch (NumberFormatException e) {
+            // 빈 문자열이 아니더라도 "abc" 같은 잘못된 문자가 들어왔을 때 처리
+            Toast.makeText(requireContext(), "페이지 번호는 유효한 숫자여야 합니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // --- 데이터 구성 및 저장 ---
         Map<String, Object> map = new HashMap<>();
         map.put("content", content);
         map.put("userId", userId);
         map.put("createdAt", new Date());
         map.put("page", pageNumber);
 
-        db.collection("discussion").document(discussionId).collection("comment").add(map);
-        binding.etComment.setText("");
-        binding.etPageInput.setText("");
-
-        loadCommentData();
+        db.collection("discussion").document(discussionId).collection("comment").add(map)
+                .addOnSuccessListener(documentReference -> {
+                    // 성공적으로 저장된 후 UI 초기화 및 로드
+                    binding.etComment.setText("");
+                    binding.etPageInput.setText("");
+                    loadCommentData();
+                })
+                .addOnFailureListener(e -> {
+                    // 저장 실패 시 오류 메시지 표시
+                    Log.e("GroupBookFragment", "댓글 저장 실패", e);
+                    Toast.makeText(requireContext(), "댓글 저장에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                });
     }
 
 

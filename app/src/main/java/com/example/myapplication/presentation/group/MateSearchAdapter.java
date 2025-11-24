@@ -85,7 +85,7 @@ public class MateSearchAdapter extends ListAdapter<MateItem, MateSearchAdapter.M
             if (imageUrl != null && !imageUrl.isEmpty()) {
                 Glide.with(itemView.getContext())
                         .load(imageUrl)
-                        .placeholder(R.drawable.capibara)
+                        .placeholder(R.drawable.bookie)
                         .error(R.drawable.capibara)
                         .circleCrop()
                         .into(profileImage);

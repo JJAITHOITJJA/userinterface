@@ -104,11 +104,12 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             if (item.getProfileImageUrl() != null && !item.getProfileImageUrl().isEmpty()) {
                 Glide.with(itemView.getContext())
                         .load(item.getProfileImageUrl())
-                        .placeholder(R.drawable.capibara)
-                        .error(R.drawable.capibara)
+                        .placeholder(R.drawable.bookie)
+                        .error(R.drawable.bookie)
+                        .circleCrop()
                         .into(profileImageUrl);
             } else {
-                profileImageUrl.setImageResource(R.drawable.capibara);
+                profileImageUrl.setImageResource(R.drawable.bookie);
             }
 
             reply.setOnClickListener(v -> {
