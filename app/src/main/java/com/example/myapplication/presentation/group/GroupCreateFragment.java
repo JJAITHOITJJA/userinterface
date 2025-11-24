@@ -103,6 +103,10 @@ public class GroupCreateFragment extends Fragment {
             createGroup();
         });
 
+        binding.ivBackGroupSearch.setOnClickListener(v->{
+            getParentFragmentManager().popBackStack();
+        });
+
         binding.btnMateSearch.setOnClickListener(v->{
             navController.navigate(R.id.action_groupCreateFragment_to_mateSearchFragment);
         });

@@ -162,7 +162,7 @@ public class SignUpFragment extends Fragment {
         userProfile.put("createdAt", FieldValue.serverTimestamp());
         userProfile.put("groupList", new ArrayList<String>());
         userProfile.put("discussionList", new ArrayList<String>());
-        userProfile.put("profileImageUrl","");
+        userProfile.put("profileImageUrl","https://firebasestorage.googleapis.com/v0/b/jjaihoitjja.firebasestorage.app/o/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202025-11-17%20003038.png?alt=media&token=d0e5d4d7-1dad-4346-8512-8a7d2b7da662");
         userProfile.put("requested", new ArrayList<String>());
 
 
