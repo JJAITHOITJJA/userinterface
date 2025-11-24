@@ -12,6 +12,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -60,6 +63,24 @@ public class RecordCreateFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ((MainActivity) requireActivity()).hideBottom();
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            Insets navigationBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
+
+            int extraPaddingTop = 3;
+
+            // 하단 패딩을 navigationBars.bottom으로 설정하여 네비게이션 바 위로 올림
+            v.setPadding(
+                    systemBars.left,
+                    0,
+                    systemBars.right,
+                    navigationBars.bottom  // 시스템 네비게이션 바 높이만큼 패딩
+            );
+            v.post(() -> ((MainActivity) requireActivity()).hideBottom());
+            return insets;
+        });
+
 
         // Firebase 초기화
         db = FirebaseFirestore.getInstance();
