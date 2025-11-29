@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.example.myapplication.R;
 import com.example.myapplication.data.home.FeedItem;
 import com.example.myapplication.databinding.FragmentBookListBinding;
+import com.example.myapplication.presentation.MainActivity;
 import com.example.myapplication.presentation.calendar.BookRecordAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -41,6 +42,8 @@ public class BookListFragment extends Fragment {
     private FirebaseFirestore db;
     private FirebaseAuth auth;
 
+    private boolean isDataLoaded = false;  // ⬅️ 데이터 로딩 상태 추가
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -57,8 +60,16 @@ public class BookListFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
+        if (getActivity() != null) {
+            ((MainActivity) getActivity()).showBottom();
+        }
+
+        db = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
+
         setupRecyclerViews();
         setupCalendarButton();
+        hideAllSections();
         loadRecordsFromFirebase();
     }
 
@@ -97,6 +108,14 @@ public class BookListFragment extends Fragment {
                     .addToBackStack(null)
                     .commit();
         }
+    }
+
+    // ⬅️ 초기에 모든 섹션 숨기기
+    private void hideAllSections() {
+        binding.tvReadingSection.setVisibility(View.GONE);
+        binding.rvReadingBooks.setVisibility(View.GONE);
+        binding.tvFinishedSection.setVisibility(View.GONE);
+        binding.rvFinishedBooks.setVisibility(View.GONE);
     }
 
     private void loadRecordsFromFirebase() {
@@ -216,26 +235,36 @@ public class BookListFragment extends Fragment {
                                 Log.d(TAG, "읽는 중: " + readingRecords.size());
                                 Log.d(TAG, "완독한 책: " + finishedRecords.size());
 
+                                // ⬅️ 데이터 로딩 완료 표시
+                                isDataLoaded = true;
+
                                 if (getActivity() != null) {
                                     getActivity().runOnUiThread(() -> {
                                         readingAdapter.notifyDataSetChanged();
                                         finishedAdapter.notifyDataSetChanged();
-                                        updateEmptyState();
+                                        updateEmptyState();  // ⬅️ 데이터 로드 후 UI 업데이트
                                     });
                                 }
                             })
                             .addOnFailureListener(e -> {
                                 Log.e(TAG, "Records 불러오기 실패", e);
                                 Toast.makeText(getContext(), "기록을 불러오는데 실패했습니다", Toast.LENGTH_SHORT).show();
+                                isDataLoaded = true;  // ⬅️ 실패해도 로딩 완료 처리
+                                updateEmptyState();
                             });
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Books 불러오기 실패", e);
                     Toast.makeText(getContext(), "책 정보를 불러오는데 실패했습니다", Toast.LENGTH_SHORT).show();
+                    isDataLoaded = true;  // ⬅️ 실패해도 로딩 완료 처리
+                    updateEmptyState();
                 });
     }
 
     private void updateEmptyState() {
+        // ⬅️ 데이터 로딩이 완료된 후에만 UI 업데이트
+        if (!isDataLoaded) return;
+
         binding.tvReadingSection.setVisibility(readingRecords.isEmpty() ? View.GONE : View.VISIBLE);
         binding.rvReadingBooks.setVisibility(readingRecords.isEmpty() ? View.GONE : View.VISIBLE);
 

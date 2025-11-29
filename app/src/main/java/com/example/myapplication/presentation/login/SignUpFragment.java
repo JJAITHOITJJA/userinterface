@@ -108,7 +108,7 @@ public class SignUpFragment extends Fragment {
         boolean isPasswordValid = password.length() >= 6;
         boolean isAllFieldsFilledAndValid = !email.isEmpty() && !nickname.isEmpty() && isPasswordValid;
 
-        int colorId = isAllFieldsFilledAndValid ? R.color.g1 : R.color.g7;
+        int colorId = isAllFieldsFilledAndValid ? R.color.g7 : R.color.g1;
         int colorValue = ContextCompat.getColor(requireContext(), colorId);
 
         binding.btnSignup.setBackgroundTintList(android.content.res.ColorStateList.valueOf(colorValue));
