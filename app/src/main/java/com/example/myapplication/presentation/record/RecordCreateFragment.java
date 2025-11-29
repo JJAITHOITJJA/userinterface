@@ -12,9 +12,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -64,29 +61,26 @@ public class RecordCreateFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ((MainActivity) requireActivity()).hideBottom();
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            Insets navigationBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
-
-            int extraPaddingTop = 3;
-
-            // 하단 패딩을 navigationBars.bottom으로 설정하여 네비게이션 바 위로 올림
-            v.setPadding(
-                    systemBars.left,
-                    0,
-                    systemBars.right,
-                    navigationBars.bottom  // 시스템 네비게이션 바 높이만큼 패딩
-            );
-            v.post(() -> ((MainActivity) requireActivity()).hideBottom());
-            return insets;
-        });
-
-
         // Firebase 초기화
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
-        setCurrentDate();
+        // Bundle에서 선택된 날짜 받기
+        if (getArguments() != null) {
+            int year = getArguments().getInt("selected_year", -1);
+            int month = getArguments().getInt("selected_month", -1);
+            int day = getArguments().getInt("selected_day", -1);
+
+            if (year != -1 && month != -1 && day != -1) {
+                selectedCalendarDay = CalendarDay.from(year, month, day);
+                updateDateDisplay();
+            } else {
+                setCurrentDate();
+            }
+        } else {
+            setCurrentDate();
+        }
+
         initializeStars();
         setupBookSearchClickListeners();
         setupFragmentResultListener();
@@ -95,6 +89,16 @@ public class RecordCreateFragment extends Fragment {
         setupCheckBoxes();
         setupBackButton();
         setupConfirmButton();
+    }
+
+    private void updateDateDisplay() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd", Locale.getDefault());
+        Calendar cal = Calendar.getInstance();
+        cal.set(selectedCalendarDay.getYear(),
+                selectedCalendarDay.getMonth() - 1,
+                selectedCalendarDay.getDay());
+        String dateString = sdf.format(cal.getTime());
+        binding.tvRecordSelectedDate.setText(dateString);
     }
 
     private void initializeStars() {
@@ -144,15 +148,7 @@ public class RecordCreateFragment extends Fragment {
 
     private void setCurrentDate() {
         selectedCalendarDay = CalendarDay.today();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd", Locale.getDefault());
-
-        Calendar cal = Calendar.getInstance();
-        cal.set(selectedCalendarDay.getYear(),
-                selectedCalendarDay.getMonth() - 1,
-                selectedCalendarDay.getDay());
-
-        String dateString = sdf.format(cal.getTime());
-        binding.tvRecordSelectedDate.setText(dateString);
+        updateDateDisplay();
     }
 
     private void showDatePicker() {
@@ -165,6 +161,9 @@ public class RecordCreateFragment extends Fragment {
                 requireContext(),
                 (view, year, month, dayOfMonth) -> {
                     selectedCalendarDay = CalendarDay.from(year, month + 1, dayOfMonth);
+
+                    Log.d(TAG, "DatePicker에서 선택한 날짜: " + year + "-" + (month + 1) + "-" + dayOfMonth);
+                    Log.d(TAG, "selectedCalendarDay: " + selectedCalendarDay);
 
                     String dateString = String.format(Locale.getDefault(), "%d.%02d.%02d",
                             year, month + 1, dayOfMonth);
@@ -310,25 +309,25 @@ public class RecordCreateFragment extends Fragment {
 
         String userId = currentUser.getUid();
 
-        // 입력된 정보 수집
         String startPageStr = binding.etRecordPage1.getText().toString().trim();
         String endPageStr = binding.etRecordPage2.getText().toString().trim();
         int startPage = Integer.parseInt(startPageStr);
         int endPage = Integer.parseInt(endPageStr);
 
         String review = binding.etRecordReview.getText().toString().trim();
-
         String status = binding.cbRecordStateReading.isChecked() ? "읽는중" : "완독";
         String category = binding.cbRecordCategoryLiterature.isChecked() ? "문학" : "비문학";
         boolean isPublic = !binding.cbRecordPrivate.isChecked();
-
         String isbn = selectedBook.getIsbn();
 
-        // CalendarDay를 "yyyy-MM-dd" 문자열로 변환
+        Log.d(TAG, "=== 저장 직전 selectedCalendarDay: " + selectedCalendarDay);
+
         String lastRecordDate = String.format(Locale.getDefault(), "%d-%02d-%02d",
                 selectedCalendarDay.getYear(),
                 selectedCalendarDay.getMonth(),
                 selectedCalendarDay.getDay());
+
+        Log.d(TAG, "=== 변환된 lastRecordDate: " + lastRecordDate);
 
         DocumentReference bookRef = db.collection("users")
                 .document(userId)
@@ -383,11 +382,15 @@ public class RecordCreateFragment extends Fragment {
 
     private void addRecord(String userId, String isbn, int startPage, int endPage,
                            String review, String status, String category, boolean isPublic) {
-        // CalendarDay를 "yyyy-MM-dd" 문자열로 변환
+
+        Log.d(TAG, "=== addRecord 시작 - selectedCalendarDay: " + selectedCalendarDay);
+
         String dateString = String.format(Locale.getDefault(), "%d-%02d-%02d",
                 selectedCalendarDay.getYear(),
                 selectedCalendarDay.getMonth(),
                 selectedCalendarDay.getDay());
+
+        Log.d(TAG, "=== addRecord dateString: " + dateString);
 
         Map<String, Object> recordData = new HashMap<>();
         recordData.put("isbn", isbn);

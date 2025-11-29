@@ -50,7 +50,7 @@ public class RecordDetailFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ((MainActivity) requireActivity()).hideBottom();
+        ((MainActivity) requireActivity()).hideBottom();  // 진입 시 숨김
 
         // Firebase 초기화
         db = FirebaseFirestore.getInstance();
@@ -68,6 +68,7 @@ public class RecordDetailFragment extends Fragment {
         setupEditButton();
         setupDeleteButton();
     }
+
 
     private void displayRecordDetails() {
         // 책 제목과 저자
@@ -182,29 +183,45 @@ public class RecordDetailFragment extends Fragment {
         }
 
         String userId = currentUser.getUid();
-        String recordId = feedItem.getId(); // FeedItem의 ID가 record ID
+        String recordId = feedItem.getId(); // record의 document ID
 
-        // Firebase에서 record 삭제
+        // ⬅️ record에서 isbn 가져오기 (books 처리에 필요)
         db.collection("users")
                 .document(userId)
                 .collection("records")
                 .document(recordId)
-                .delete()
-                .addOnSuccessListener(aVoid -> {
-                    Log.d(TAG, "Record 삭제 성공: " + recordId);
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String isbn = documentSnapshot.getString("isbn");
 
-                    // 해당 ISBN의 다른 records가 있는지 확인
-                    checkAndUpdateBook(userId, feedItem.getId());
+                        // 1. record 삭제
+                        documentSnapshot.getReference().delete()
+                                .addOnSuccessListener(aVoid -> {
+                                    Log.d(TAG, "Record 삭제 성공: " + recordId);
 
-                    Toast.makeText(getContext(), "기록이 삭제되었습니다", Toast.LENGTH_SHORT).show();
+                                    // 2. 해당 isbn의 남은 records 확인 및 books 업데이트
+                                    if (isbn != null) {
+                                        checkAndUpdateBook(userId, isbn);
+                                    }
 
-                    // 이전 화면으로 돌아가기
-                    if (getActivity() != null) {
-                        getActivity().onBackPressed();
+                                    Toast.makeText(getContext(), "기록이 삭제되었습니다", Toast.LENGTH_SHORT).show();
+
+                                    // 이전 화면으로 돌아가기
+                                    if (getActivity() != null) {
+                                        getActivity().onBackPressed();
+                                    }
+                                })
+                                .addOnFailureListener(e -> {
+                                    Log.e(TAG, "Record 삭제 실패", e);
+                                    Toast.makeText(getContext(), "삭제에 실패했습니다", Toast.LENGTH_SHORT).show();
+                                });
+                    } else {
+                        Toast.makeText(getContext(), "기록을 찾을 수 없습니다", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(e -> {
-                    Log.e(TAG, "Record 삭제 실패", e);
+                    Log.e(TAG, "Record 조회 실패", e);
                     Toast.makeText(getContext(), "삭제에 실패했습니다", Toast.LENGTH_SHORT).show();
                 });
     }
@@ -218,43 +235,21 @@ public class RecordDetailFragment extends Fragment {
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (queryDocumentSnapshots.isEmpty()) {
-                        // 남은 record가 없으면 book도 삭제
+                        // ⬅️ 남은 record가 없으면 book도 삭제
                         db.collection("users")
                                 .document(userId)
                                 .collection("books")
                                 .document(isbn)
                                 .delete()
                                 .addOnSuccessListener(aVoid -> {
-                                    Log.d(TAG, "Book도 삭제됨: " + isbn);
+                                    Log.d(TAG, "Book도 삭제됨 (남은 기록 없음): " + isbn);
                                 })
                                 .addOnFailureListener(e -> {
                                     Log.e(TAG, "Book 삭제 실패", e);
                                 });
                     } else {
-                        // 남은 record가 있으면 lastRecordDate 업데이트
-                        // 가장 최근 record의 날짜를 찾아서 업데이트
-                        String latestDate = "";
-                        for (int i = 0; i < queryDocumentSnapshots.size(); i++) {
-                            String date = queryDocumentSnapshots.getDocuments().get(i).getString("date");
-                            if (date != null && date.compareTo(latestDate) > 0) {
-                                latestDate = date;
-                            }
-                        }
-
-                        if (!latestDate.isEmpty()) {
-                            final String finalDate = latestDate;
-                            db.collection("users")
-                                    .document(userId)
-                                    .collection("books")
-                                    .document(isbn)
-                                    .update("lastRecordDate", finalDate)
-                                    .addOnSuccessListener(aVoid -> {
-                                        Log.d(TAG, "Book의 lastRecordDate 업데이트 성공");
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        Log.e(TAG, "Book 업데이트 실패", e);
-                                    });
-                        }
+                        // ⬅️ 남은 record가 있으면 lastRecordDate와 status 업데이트
+                        updateBookAfterDelete(userId, isbn, queryDocumentSnapshots);
                     }
                 })
                 .addOnFailureListener(e -> {
@@ -262,9 +257,67 @@ public class RecordDetailFragment extends Fragment {
                 });
     }
 
+    // ⬅️ 삭제 후 book 업데이트 (lastRecordDate, status)
+    private void updateBookAfterDelete(String userId, String isbn,
+                                       com.google.firebase.firestore.QuerySnapshot queryDocumentSnapshots) {
+        String latestDate = "";
+        String latestStatus = "읽는중";
+
+        // 가장 최근 record 찾기
+        for (com.google.firebase.firestore.QueryDocumentSnapshot document : queryDocumentSnapshots) {
+            String date = document.getString("date");
+
+            if (date != null && date.compareTo(latestDate) > 0) {
+                latestDate = date;
+            }
+        }
+
+        // 남은 records 중에서 "완독" 상태 확인
+        boolean hasFinished = false;
+        for (com.google.firebase.firestore.QueryDocumentSnapshot document : queryDocumentSnapshots) {
+            // record에서 isbn으로 book의 status 확인
+            // 편의상 남은 records가 있으면 status는 유지
+        }
+
+        if (!latestDate.isEmpty()) {
+            final String finalDate = latestDate;
+
+            // ⬅️ books 컬렉션에서 해당 isbn의 status 확인
+            db.collection("users")
+                    .document(userId)
+                    .collection("books")
+                    .document(isbn)
+                    .get()
+                    .addOnSuccessListener(bookDoc -> {
+                        if (bookDoc.exists()) {
+                            String currentStatus = bookDoc.getString("status");
+
+                            // lastRecordDate만 업데이트 (status는 books에 저장된 값 유지)
+                            java.util.Map<String, Object> updates = new java.util.HashMap<>();
+                            updates.put("lastRecordDate", finalDate);
+
+                            bookDoc.getReference().update(updates)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Log.d(TAG, "Book의 lastRecordDate 업데이트 성공: " + finalDate);
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e(TAG, "Book 업데이트 실패", e);
+                                    });
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "Book 조회 실패", e);
+                    });
+        }
+    }
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+
+        if (getActivity() != null) {
+            ((MainActivity) getActivity()).showBottom();
+        }
+
         binding = null;
     }
 }

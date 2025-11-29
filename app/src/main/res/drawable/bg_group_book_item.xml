@@ -3,7 +3,16 @@
     android:height="127dp"
     android:viewportWidth="333"
     android:viewportHeight="127">
+
+    <!-- 배경 -->
     <path
         android:pathData="M9,0L324,0A9,9 0,0 1,333 9L333,118A9,9 0,0 1,324 127L9,127A9,9 0,0 1,0 118L0,9A9,9 0,0 1,9 0z"
         android:fillColor="#FFFFFF"/>
+
+    <!-- 테두리 추가 -->
+    <path
+        android:pathData="M9,0L324,0A9,9 0,0 1,333 9L333,118A9,9 0,0 1,324 127L9,127A9,9 0,0 1,0 118L0,9A9,9 0,0 1,9 0z"
+        android:strokeColor="#E0E0E0"
+        android:strokeWidth="1"
+        android:fillColor="#00000000"/>
 </vector>

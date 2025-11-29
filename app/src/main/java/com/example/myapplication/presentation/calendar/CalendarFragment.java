@@ -23,6 +23,7 @@ import androidx.navigation.NavController;
 import com.example.myapplication.R;
 import com.example.myapplication.data.home.FeedItem;
 import com.example.myapplication.databinding.FragmentCalendarBinding;
+import com.example.myapplication.presentation.MainActivity;
 import com.example.myapplication.presentation.record.BookListFragment;
 import com.example.myapplication.presentation.record.RecordDetailFragment;
 import com.google.firebase.auth.FirebaseAuth;
@@ -87,13 +88,15 @@ public class CalendarFragment extends Fragment {
         setupButtonListeners();
         setupFilterButtons();
         setupMenuButton();
-
         // Firebase에서 데이터 로드
         loadRecordsFromFirebase();
 
         CalendarDay today = CalendarDay.today();
         calendarView.setSelectedDate(today);
         filterRecordsByDate(today);
+        if (getActivity() != null) {
+            ((MainActivity) getActivity()).showBottom();
+        }
     }
 
     private void setupFragmentResultListener() {
@@ -261,14 +264,30 @@ public class CalendarFragment extends Fragment {
     }
 
     private void setupButtonListeners() {
-        binding.btnAddRecord.setOnClickListener(v -> navigateToCreateRecord());
-        binding.btnAddMoreRecord.setOnClickListener(v -> navigateToCreateRecord());
+        binding.btnAddRecord.setOnClickListener(v -> {
+            CalendarDay selectedDate = calendarView.getSelectedDate();
+            navigateToCreateRecord(selectedDate);
+        });
+
+        binding.btnAddMoreRecord.setOnClickListener(v -> {
+            CalendarDay selectedDate = calendarView.getSelectedDate();
+            navigateToCreateRecord(selectedDate);
+        });
     }
 
-    private void navigateToCreateRecord() {
+    private void navigateToCreateRecord(CalendarDay selectedDate) {
         try {
             NavController navController = Navigation.findNavController(requireView());
-            navController.navigate(R.id.action_recordContainer_to_recordCreate);
+
+            // Bundle로 선택된 날짜 전달
+            Bundle bundle = new Bundle();
+            if (selectedDate != null) {
+                bundle.putInt("selected_year", selectedDate.getYear());
+                bundle.putInt("selected_month", selectedDate.getMonth());
+                bundle.putInt("selected_day", selectedDate.getDay());
+            }
+
+            navController.navigate(R.id.action_recordContainer_to_recordCreate, bundle);
         } catch (Exception e) {
             Toast.makeText(getContext(), "페이지 이동에 실패했습니다.", Toast.LENGTH_SHORT).show();
         }
