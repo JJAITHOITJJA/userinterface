@@ -98,11 +98,11 @@ public class MateSearchAdapter extends ListAdapter<MateItem, MateSearchAdapter.M
                 Glide.with(itemView.getContext())
                         .load(imageUrl)
                         .placeholder(R.drawable.bookie)
-                        .error(R.drawable.capibara)
+                        .error(R.drawable.bookie)
                         .circleCrop()
                         .into(profileImage);
             } else {
-                profileImage.setImageResource(R.drawable.capibara);
+                profileImage.setImageResource(R.drawable.bookie);
             }
             name.setText(item.getName());
             id.setText(item.getId());

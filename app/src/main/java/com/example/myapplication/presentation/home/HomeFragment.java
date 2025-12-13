@@ -296,13 +296,13 @@ public class HomeFragment extends Fragment {
                         if (profileImageUrl != null && !profileImageUrl.isEmpty()) {
                             com.bumptech.glide.Glide.with(requireContext())
                                     .load(profileImageUrl)
-                                    .placeholder(R.drawable.ic_launcher_background)
-                                    .error(R.drawable.ic_launcher_background)
+                                    .placeholder(R.drawable.bookie)
+                                    .error(R.drawable.bookie)
                                     .circleCrop()
                                     .into(binding.ivUserProfile);
                         } else {
                             // profileImageUrl이 없으면 기본 이미지 사용
-                            binding.ivUserProfile.setImageResource(R.drawable.ic_launcher_background);
+                            binding.ivUserProfile.setImageResource(R.drawable.bookie);
                         }
 
                         Log.d(TAG, "사용자 프로필 로드 성공");
