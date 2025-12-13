@@ -54,10 +54,8 @@ public class MateSearchFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
-
         // ViewModel 초기화 (중요!)
         viewModel = new ViewModelProvider(requireActivity()).get(AddMateViewModel.class);
-
     }
 
     @Override
@@ -80,12 +78,13 @@ public class MateSearchFragment extends Fragment {
         initSearchListAdapter();
         initAddedMateListAdapter();
         observeAddedMates();
+        observeSearchResults(); // 검색 결과 관찰 추가
 
         binding.etOnmateSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
                 if(actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEARCH||
-                        actionId == EditorInfo.IME_ACTION_GO||(keyEvent.getAction() == KeyEvent.ACTION_DOWN &&
+                        actionId == EditorInfo.IME_ACTION_GO||(keyEvent != null && keyEvent.getAction() == KeyEvent.ACTION_DOWN &&
                         keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER)){
                     String keyword = binding.etOnmateSearch.getText().toString().trim();
 
@@ -104,6 +103,13 @@ public class MateSearchFragment extends Fragment {
         binding.tvReturnToCreateBtn.setOnClickListener(v->
                 navController.popBackStack()
         );
+
+        // 이전 검색 결과가 있으면 복원
+        if (viewModel.getSearchResults().getValue() != null &&
+                !viewModel.getSearchResults().getValue().isEmpty()) {
+            binding.tvOnmateSearch.setVisibility(View.VISIBLE);
+            binding.rvSearchList.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -195,6 +201,28 @@ public class MateSearchFragment extends Fragment {
         }
     }
 
+    // 검색 결과 관찰
+    private void observeSearchResults() {
+        if(viewModel != null) {
+            viewModel.getSearchResults().observe(getViewLifecycleOwner(), new Observer<List<MateItem>>() {
+                @Override
+                public void onChanged(List<MateItem> searchResults) {
+                    if(binding == null) return;
+
+                    if(searchResults != null && !searchResults.isEmpty()) {
+                        binding.tvOnmateSearch.setVisibility(View.VISIBLE);
+                        binding.rvSearchList.setVisibility(View.VISIBLE);
+                        searchAdapter.submitList(searchResults);
+                    } else if (searchResults != null && searchResults.isEmpty()) {
+                        binding.tvOnmateSearch.setVisibility(View.VISIBLE);
+                        binding.rvSearchList.setVisibility(View.GONE);
+                        searchAdapter.submitList(Collections.emptyList());
+                    }
+                }
+            });
+        }
+    }
+
     private void searchUser(String keyword){
         db.collection("users").whereEqualTo("nickname", keyword)
                 .get()
@@ -202,10 +230,6 @@ public class MateSearchFragment extends Fragment {
                     if(binding == null) return; // Fragment가 파괴된 경우 방지
 
                     List<MateItem> searchResultList = new ArrayList<>();
-
-                    if(binding.tvOnmateSearch != null) {
-                        binding.tvOnmateSearch.setVisibility(View.VISIBLE);
-                    }
 
                     if(!queryDocumentSnapshots.isEmpty()){
                         for(DocumentSnapshot document : queryDocumentSnapshots){
@@ -217,18 +241,10 @@ public class MateSearchFragment extends Fragment {
 
                             searchResultList.add(item);
                         }
-
-                        if(binding.rvSearchList != null) {
-                            binding.rvSearchList.setVisibility(View.VISIBLE);
-                        }
-                        searchAdapter.submitList(searchResultList);
-
-                    } else {
-                        if(binding.rvSearchList != null) {
-                            binding.rvSearchList.setVisibility(View.GONE);
-                        }
-                        searchAdapter.submitList(Collections.emptyList());
                     }
+
+                    // ViewModel에 검색 결과 저장
+                    viewModel.setSearchResults(searchResultList);
                 })
                 .addOnFailureListener(e -> {
                     Log.w("MateSearchFragment", "검색 실패: " + e.getMessage());

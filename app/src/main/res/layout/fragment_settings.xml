@@ -257,6 +257,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="고객센터"
+            android:visibility="invisible"
             android:textColor="@color/font_main"
             android:fontFamily="@font/pretendard_regular"
             android:textSize="13sp"
@@ -271,157 +272,157 @@
             app:layout_constraintTop_toBottomOf="@id/tv_account_service_center"
             app:layout_constraintStart_toStartOf="@id/cv_account_profile"/>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_account_component4"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintWidth_percent="0.5012"
-            app:layout_constraintTop_toBottomOf="@id/account_mg13"
-            app:layout_constraintStart_toStartOf="@id/cv_account_profile">
+<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--            android:id="@+id/cl_account_component4"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            app:layout_constraintWidth_percent="0.5012"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/account_mg13"-->
+<!--            app:layout_constraintStart_toStartOf="@id/cv_account_profile">-->
 
-            <View
-                android:id="@+id/account_mg14_1"
-                android:layout_width="0dp"
-                android:layout_height="2dp"
-                app:layout_constraintWidth_percent="0.0507"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+<!--            <View-->
+<!--                android:id="@+id/account_mg14_1"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="2dp"-->
+<!--                app:layout_constraintWidth_percent="0.0507"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent"/>-->
 
-            <ImageView
-                android:id="@+id/iv_folder"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_account_folder"
-                app:layout_constraintStart_toEndOf="@id/account_mg14_1"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+<!--            <ImageView-->
+<!--                android:id="@+id/iv_folder"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:src="@drawable/ic_account_folder"-->
+<!--                app:layout_constraintStart_toEndOf="@id/account_mg14_1"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"/>-->
 
-            <View
-                android:id="@+id/account_mg14_2"
-                android:layout_width="0dp"
-                android:layout_height="2dp"
-                app:layout_constraintWidth_percent="0.0761"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toEndOf="@id/iv_folder"/>
+<!--            <View-->
+<!--                android:id="@+id/account_mg14_2"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="2dp"-->
+<!--                app:layout_constraintWidth_percent="0.0761"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:layout_constraintStart_toEndOf="@id/iv_folder"/>-->
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="15sp"
-                android:text="개인정보 처리방침 안내"
-                android:textColor="@color/font_main"
-                android:fontFamily="@font/pretendard_medium"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/account_mg14_2"/>
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:textSize="15sp"-->
+<!--                android:text="개인정보 처리방침 안내"-->
+<!--                android:textColor="@color/font_main"-->
+<!--                android:fontFamily="@font/pretendard_medium"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintStart_toEndOf="@id/account_mg14_2"/>-->
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
 
-        <View
-            android:id="@+id/account_mg15"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintHeight_percent="0.0189"
-            app:layout_constraintTop_toBottomOf="@id/cl_account_component4"
-            app:layout_constraintStart_toStartOf="@id/cl_account_component4"/>
+<!--        <View-->
+<!--            android:id="@+id/account_mg15"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            app:layout_constraintHeight_percent="0.0189"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/cl_account_component4"-->
+<!--            app:layout_constraintStart_toStartOf="@id/cl_account_component4"/>-->
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_account_component5"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintWidth_percent="0.5012"
-            app:layout_constraintTop_toBottomOf="@id/account_mg15"
-            app:layout_constraintStart_toStartOf="@id/cv_account_profile">
+<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--            android:id="@+id/cl_account_component5"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            app:layout_constraintWidth_percent="0.5012"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/account_mg15"-->
+<!--            app:layout_constraintStart_toStartOf="@id/cv_account_profile">-->
 
-            <View
-                android:id="@+id/account_mg16_1"
-                android:layout_width="0dp"
-                android:layout_height="2dp"
-                app:layout_constraintWidth_percent="0.0507"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+<!--            <View-->
+<!--                android:id="@+id/account_mg16_1"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="2dp"-->
+<!--                app:layout_constraintWidth_percent="0.0507"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent"/>-->
 
-            <ImageView
-                android:id="@+id/iv_question"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_account_question"
-                app:layout_constraintStart_toEndOf="@id/account_mg16_1"
-                app:layout_constraintTop_toTopOf="parent"/>
+<!--            <ImageView-->
+<!--                android:id="@+id/iv_question"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:src="@drawable/ic_account_question"-->
+<!--                app:layout_constraintStart_toEndOf="@id/account_mg16_1"-->
+<!--                app:layout_constraintTop_toTopOf="parent"/>-->
 
-            <View
-                android:id="@+id/account_mg16_2"
-                android:layout_width="0dp"
-                android:layout_height="2dp"
-                app:layout_constraintWidth_percent="0.0761"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toEndOf="@id/iv_question"/>
+<!--            <View-->
+<!--                android:id="@+id/account_mg16_2"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="2dp"-->
+<!--                app:layout_constraintWidth_percent="0.0761"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:layout_constraintStart_toEndOf="@id/iv_question"/>-->
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="15sp"
-                android:text="자주 묻는 질문"
-                android:textColor="@color/font_main"
-                android:fontFamily="@font/pretendard_medium"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/account_mg16_2"/>
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:textSize="15sp"-->
+<!--                android:text="자주 묻는 질문"-->
+<!--                android:textColor="@color/font_main"-->
+<!--                android:fontFamily="@font/pretendard_medium"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintStart_toEndOf="@id/account_mg16_2"/>-->
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
 
-        <View
-            android:id="@+id/account_mg17"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintHeight_percent="0.0189"
-            app:layout_constraintTop_toBottomOf="@id/cl_account_component5"
-            app:layout_constraintStart_toStartOf="@id/cl_account_component1"/>
+<!--        <View-->
+<!--            android:id="@+id/account_mg17"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            app:layout_constraintHeight_percent="0.0189"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/cl_account_component5"-->
+<!--            app:layout_constraintStart_toStartOf="@id/cl_account_component1"/>-->
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_account_component6"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintWidth_percent="0.5012"
-            app:layout_constraintTop_toBottomOf="@id/account_mg17"
-            app:layout_constraintStart_toStartOf="@id/cv_account_profile">
+<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--            android:id="@+id/cl_account_component6"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            app:layout_constraintWidth_percent="0.5012"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/account_mg17"-->
+<!--            app:layout_constraintStart_toStartOf="@id/cv_account_profile">-->
 
-            <View
-                android:id="@+id/account_mg18_1"
-                android:layout_width="0dp"
-                android:layout_height="2dp"
-                app:layout_constraintWidth_percent="0.0507"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+<!--            <View-->
+<!--                android:id="@+id/account_mg18_1"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="2dp"-->
+<!--                app:layout_constraintWidth_percent="0.0507"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent"/>-->
 
-            <ImageView
-                android:id="@+id/iv_center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_account_counsl"
-                app:layout_constraintStart_toEndOf="@id/account_mg18_1"
-                app:layout_constraintTop_toTopOf="parent"/>
+<!--            <ImageView-->
+<!--                android:id="@+id/iv_center"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:src="@drawable/ic_account_counsl"-->
+<!--                app:layout_constraintStart_toEndOf="@id/account_mg18_1"-->
+<!--                app:layout_constraintTop_toTopOf="parent"/>-->
 
-            <View
-                android:id="@+id/account_mg18_2"
-                android:layout_width="0dp"
-                android:layout_height="2dp"
-                app:layout_constraintWidth_percent="0.0761"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toEndOf="@id/iv_center"/>
+<!--            <View-->
+<!--                android:id="@+id/account_mg18_2"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="2dp"-->
+<!--                app:layout_constraintWidth_percent="0.0761"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:layout_constraintStart_toEndOf="@id/iv_center"/>-->
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="15sp"
-                android:text="고객센터"
-                android:textColor="@color/font_main"
-                android:fontFamily="@font/pretendard_medium"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/account_mg18_2"/>
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:textSize="15sp"-->
+<!--                android:text="고객센터"-->
+<!--                android:textColor="@color/font_main"-->
+<!--                android:fontFamily="@font/pretendard_medium"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintStart_toEndOf="@id/account_mg18_2"/>-->
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
 
         <!-- Loading Overlay -->
         <FrameLayout
