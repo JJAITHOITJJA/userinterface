@@ -158,22 +158,35 @@ public class DiscussionCreateFragment extends Fragment {
         discussionData.put("topic", topic);
         discussionData.put("bookCover", selectedBook.getImageUrl());
 
-
         db.collection("discussion").add(discussionData)
                 .addOnSuccessListener(documentReference -> {
                     String discussionId = documentReference.getId();
-                    db.collection("group").document(groupId).update("discussionList", FieldValue.arrayUnion(discussionId));
-                    if (navController != null) {
-                        navController.popBackStack();
-                    }
+
+                    // group 문서 업데이트: discussionList에 추가 + thumbnailUrl 업데이트
+                    Map<String, Object> groupUpdates = new HashMap<>();
+                    groupUpdates.put("discussionList", FieldValue.arrayUnion(discussionId));
+                    groupUpdates.put("thumbnailUrl", selectedBook.getImageUrl());
+
+                    db.collection("group").document(groupId)
+                            .update(groupUpdates)
+                            .addOnSuccessListener(aVoid -> {
+                                Toast.makeText(getContext(), "토론이 생성되었습니다", Toast.LENGTH_SHORT).show();
+                                if (navController != null) {
+                                    navController.popBackStack();
+                                }
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.e("DiscussionCreate", "Error updating group", e);
+                                // 토론은 생성되었지만 그룹 업데이트 실패
+                                if (navController != null) {
+                                    navController.popBackStack();
+                                }
+                            });
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(getContext(), "토론 생성에 실패했습니다", Toast.LENGTH_SHORT).show();
                     Log.e("DiscussionCreate", "Error creating discussion", e);
                 });
-
-
-
     }
 
 }

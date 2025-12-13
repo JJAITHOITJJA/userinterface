@@ -30,6 +30,8 @@
         android:includeFontPadding="false"
         android:text="안녕이라 그랬어"
         android:textColor="@color/font_main"
+        android:maxLines="3"
+        android:maxWidth="250dp"
         android:textSize="15sp"
         android:fontFamily="@font/pretendard_semibold"/>
 

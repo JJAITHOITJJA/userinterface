@@ -197,6 +197,55 @@ public class GroupInsideFragment extends Fragment {
         });
     }
 
+//    private void loadDiscussionData(List<String> discussionIds){
+//        if(discussionIds == null || discussionIds.isEmpty()){
+//            discussionAdapter.submitList(Collections.emptyList());
+//            Log.d("GroupInsideFragment", "loadDiscussionData: 토론 ID 목록이 비어 있습니다.");
+//            return;
+//        }
+//
+//        Log.d("GroupInsideFragment", "loadDiscussionData() 실행: 토론 ID 개수: " + discussionIds.size());
+//
+//        List<DiscussionItem> discussionItems = new ArrayList<>();
+//
+//        for(String discussionId : discussionIds){
+//            db.collection("discussion").document(discussionId).get()
+//                    .addOnCompleteListener(task -> {
+//                        if(task.isSuccessful()){
+//                            DocumentSnapshot document = task.getResult();
+//                            if(document.exists()){
+//                                Log.d("GroupInsideFragment", "토론 문서 로드 성공: " + discussionId);
+//                                String bookName = document.getString("bookName");
+//                                String author = document.getString("author");
+//                                String topic = document.getString("topic");
+//                                String bookCover = document.getString("bookCover");
+//
+//                                DiscussionItem item = new DiscussionItem(
+//                                        discussionId,
+//                                        bookName,
+//                                        author,
+//                                        bookCover,
+//                                        topic,
+//                                        FieldValue.serverTimestamp().toString()
+//                                );
+//                                discussionItems.add(item);
+//                                Log.d("GroupInsideFragment", "현재 로드된 토론 항목 개수: " + discussionItems.size());
+//
+//                                if(discussionItems.size() == discussionIds.size()){
+//                                    discussionItems.sort(DiscussionItem::compareTo);
+//                                    db.collection("group").document(groupId)
+//                                            .update("thumbnailUrl", discussionItems.get(0).getBookImageUrl());
+//                                    discussionAdapter.submitList(new ArrayList<>(discussionItems));
+//                                }
+//                            } else {
+//                                Log.w("GroupInsideFragment", "토론 문서가 존재하지 않음: " + discussionId);
+//                            }
+//                        } else {
+//                            Log.e("GroupInsideFragment", "토론 문서 로드 실패: " + discussionId, task.getException());
+//                        }
+//                    });
+//        }
+//    }
     private void loadDiscussionData(List<String> discussionIds){
         if(discussionIds == null || discussionIds.isEmpty()){
             discussionAdapter.submitList(Collections.emptyList());
@@ -206,9 +255,13 @@ public class GroupInsideFragment extends Fragment {
 
         Log.d("GroupInsideFragment", "loadDiscussionData() 실행: 토론 ID 개수: " + discussionIds.size());
 
+        // discussionList를 역순으로 뒤집기 (최신 항목이 앞으로)
+        List<String> reversedIds = new ArrayList<>(discussionIds);
+        Collections.reverse(reversedIds);
+
         List<DiscussionItem> discussionItems = new ArrayList<>();
 
-        for(String discussionId : discussionIds){
+        for(String discussionId : reversedIds){
             db.collection("discussion").document(discussionId).get()
                     .addOnCompleteListener(task -> {
                         if(task.isSuccessful()){
@@ -226,16 +279,28 @@ public class GroupInsideFragment extends Fragment {
                                         author,
                                         bookCover,
                                         topic,
-                                        FieldValue.serverTimestamp().toString()
+                                        ""  // timestamp는 여기서 필요 없음
                                 );
                                 discussionItems.add(item);
                                 Log.d("GroupInsideFragment", "현재 로드된 토론 항목 개수: " + discussionItems.size());
 
                                 if(discussionItems.size() == discussionIds.size()){
-                                    discussionItems.sort(DiscussionItem::compareTo);
-                                    db.collection("group").document(groupId)
-                                            .update("thumbnailUrl", discussionItems.get(0).getBookImageUrl());
-                                    discussionAdapter.submitList(new ArrayList<>(discussionItems));
+                                    // 비동기 완료 순서대로 추가되므로, 원래 순서 유지를 위해 재정렬
+                                    List<DiscussionItem> orderedItems = new ArrayList<>();
+                                    for(String id : reversedIds) {
+                                        for(DiscussionItem di : discussionItems) {
+                                            if(di.getDiscussionId().equals(id)) {
+                                                orderedItems.add(di);
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    if(!orderedItems.isEmpty()) {
+                                        db.collection("group").document(groupId)
+                                                .update("thumbnailUrl", orderedItems.get(0).getBookImageUrl());
+                                    }
+                                    discussionAdapter.submitList(orderedItems);
                                 }
                             } else {
                                 Log.w("GroupInsideFragment", "토론 문서가 존재하지 않음: " + discussionId);
