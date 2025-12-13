@@ -182,12 +182,12 @@ public class UserHomeFragment extends Fragment {
                         if (profileImageUrl != null && !profileImageUrl.isEmpty()) {
                             com.bumptech.glide.Glide.with(requireContext())
                                     .load(profileImageUrl)
-                                    .placeholder(R.drawable.basic_profile)
-                                    .error(R.drawable.basic_profile)
+                                    .placeholder(R.drawable.bookie)
+                                    .error(R.drawable.bookie)
                                     .circleCrop()
                                     .into(binding.ivUserProfile);
                         } else {
-                            binding.ivUserProfile.setImageResource(R.drawable.basic_profile);
+                            binding.ivUserProfile.setImageResource(R.drawable.bookie);
                         }
 
                         Log.d(TAG, "사용자 프로필 로드 성공");
